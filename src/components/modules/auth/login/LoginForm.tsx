@@ -12,67 +12,58 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { loginUser, reCaptchaTokenVerification } from "@/services/AuthService";
+import { loginUser } from "@/services/AuthService";
 
 import { toast } from "sonner";
 import { loginSchema } from "./LoginValidation";
-import ReCAPTCHA from "react-google-recaptcha";
-import { useRouter, useSearchParams } from "next/navigation";
+
+// import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { useUser } from "@/context/UserContext";
 import { IUser } from "@/types";
 
 const LoginForm = () => {
-  const form = useForm({
-    resolver: zodResolver(loginSchema),
-  });
-
+  const form = useForm({ resolver: zodResolver(loginSchema) });
   const {
     formState: { isSubmitting },
   } = form;
 
-  const [reCaptchaStatus, setReCaptchaStatus] = useState(false);
+  // User context and routing
   const { setUser } = useUser();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirectPath");
-  console.log(redirect);
+  // const searchParams = useSearchParams();
+  // const redirect = searchParams.get("redirectPath") || "/";
   const router = useRouter();
-  console.log(reCaptchaStatus);
 
-  const handleReCaptcha = async (value: string | null) => {
-    try {
-      const res = await reCaptchaTokenVerification(value!);
-      console.log(res);
-      if (res?.success) {
-        setReCaptchaStatus(true);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+  // Submit handler for form submission
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       const res = await loginUser(data);
-      if (res?.success) {
-        toast.success(res?.message);
-
-        // ✅ Decode the token and update user context
-        const token = res?.data?.accessToken;
-        if (token) {
-          const decodedUser = jwtDecode<IUser>(token);
-          setUser(decodedUser); // <- This makes the UI reflect user state instantly
-        }
-
-        router.push(redirect ?? "/");
-      } else {
-        toast.error(res.message);
+      if (!res?.success) {
+        toast.error(res?.message || "Login failed");
+        return;
       }
+
+      // Handle success case
+      const token = res?.data?.accessToken;
+      if (token) {
+        try {
+          const decodedUser = jwtDecode<IUser>(token);
+          setUser(decodedUser); // Update user context
+        } catch (error) {
+          console.error("Token decoding failed", error);
+          toast.error("Invalid token received");
+          return;
+        }
+      }
+
+      // Redirect to the home page or a different page after successful login
+      router.push("/");
     } catch (err: any) {
-      console.error(err);
-      toast.error("Login failed");
+      console.error("Login error:", err);
+      toast.error("An unexpected error occurred");
     }
   };
 
@@ -80,7 +71,7 @@ const LoginForm = () => {
     <div className="border-2 border-gray-300 rounded-xl flex-grow max-w-md w-full p-5">
       <Logo />
       <div className="mb-3">
-        <div className="flex items-center space-x-4 mb-2 ">
+        <div className="flex items-center space-x-4 mb-2">
           <h1>Login</h1>
           <p className="font-medium text-sm text-gray-500">Welcome Back!</p>
         </div>
@@ -113,19 +104,8 @@ const LoginForm = () => {
               </FormItem>
             )}
           />
-          <div className="flex w-full mt-3">
-            <ReCAPTCHA
-              className="mx-auto"
-              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY!}
-              onChange={handleReCaptcha}
-            />
-          </div>
-          ,
-          <Button
-            disabled={reCaptchaStatus ? false : true}
-            type="submit"
-            className="w-full"
-          >
+
+          <Button type="submit" className="w-full">
             {isSubmitting ? "Logging..." : "Login"}
           </Button>
         </form>
@@ -133,13 +113,11 @@ const LoginForm = () => {
       <p className="text-sm text-gray-600 text-center my-3">
         Do not have an account?
         <Link href="/register" className="text-primary ml-1">
-          Login
+          Register
         </Link>
       </p>
     </div>
   );
 };
-
-//
 
 export default LoginForm;

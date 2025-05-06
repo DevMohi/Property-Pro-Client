@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { getSingleListing } from "@/services/PropertyService";
+import { deleteListing, getSingleListing } from "@/services/PropertyService";
+import { toast } from "sonner";
 // import {
 //   useDeleteListingMutation,
 //   useGetSingleListingQuery,
@@ -62,25 +63,27 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
   // const [deleteProperty, { isLoading: isDeleting }] =
   //   useDeleteListingMutation();
 
-  // //  console.log(property);
-  const handleDelete = async () => {
-    // try {
-    //   await deleteProperty(params.id).unwrap();
-    //   toast({
-    //     title: "Property deleted",
-    //     description: "The property has been successfully deleted.",
-    //   });
-    //   router.push("/landlord/properties");
-    //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // } catch (error) {
-    //   toast({
-    //     title: "Error",
-    //     description: "Failed to delete property.",
-    //     variant: "destructive",
-    //   });
-    // } finally {
-    //   setIsDeleteDialogOpen(false);
-    // }
+  const handleDelete = async (id: string) => {
+    try {
+      // Call the deleteListing function to delete the property
+      const res = await deleteListing(id);
+      console.log(res);
+
+      if (res?.success) {
+        // Show success toast on successful deletion
+        toast.success(res?.message);
+
+        // Redirect to the properties page
+        router.push("/landlord/dashboard");
+      } else {
+        // Show error toast in case of failure
+        toast.error(res?.message);
+      }
+    } catch (error: any) {
+      // Show error toast in case of exception
+      toast.error(error);
+      console.error("Error deleting property:", error);
+    }
   };
 
   if (isLoading || !property) {
@@ -138,10 +141,10 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                 </Button>
                 <Button
                   variant="destructive"
-                  onClick={handleDelete}
+                  onClick={() => handleDelete(params.id)}
                   // disabled={isDeleting}
                 >
-                  {/* {isDeleting ? "Deleting..." : "Delete Property"}  */}
+                  Delete Property
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -187,7 +190,7 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
           <Tabs defaultValue="details" className="mt-6">
             <TabsList>
               <TabsTrigger value="details">Details</TabsTrigger>
-              {/* <TabsTrigger value="amenities">Amenities</TabsTrigger> */}
+              <TabsTrigger value="amenities">Amenities</TabsTrigger>
               <TabsTrigger value="location">Location</TabsTrigger>
             </TabsList>
 
@@ -207,14 +210,17 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                         className={
                           property.houseStatus === "available"
                             ? "bg-green-500"
-                            : // property.houseStatus === "pending" ? "bg-yellow-500" :
-                              "bg-blue-500"
+                            : property.houseStatus === "pending"
+                            ? "bg-yellow-500"
+                            : "bg-blue-500"
                         }
                       >
                         {property.houseStatus}
                       </Badge>
                     </DetailItem>
-                    {/* <DetailItem label="Listed On">{property.createdAt}</DetailItem> */}
+                    <DetailItem label="Listed On">
+                      {property.createdAt}
+                    </DetailItem>
                   </div>
                 </CardContent>
               </Card>
@@ -266,7 +272,9 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                   />
                 </div>
                 <div className="border-t pt-4">
-                  <h3 className="font-medium mb-2">Owners Contact Information</h3>
+                  <h3 className="font-medium mb-2">
+                    Owners Contact Information
+                  </h3>
                   <p className="text-sm">{property.landlordId.name}</p>
                   <p className="text-sm">{property.landlordId.email}</p>
                   <p className="text-sm">{property.landlordId.phone}</p>

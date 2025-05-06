@@ -30,7 +30,7 @@ export default function PropertyList({
         <Card key={property._id} className="overflow-hidden">
           <CardContent className="p-0">
             <Link
-              href={`/dashboard/properties/${property._id}`}
+              href={`/landlord/properties/${property._id}`}
               className="flex flex-col md:flex-row"
             >
               <div className="relative h-48 w-full md:h-auto md:w-48">

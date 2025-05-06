@@ -38,6 +38,7 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   // const { toast } = useToast();
   const [property, setProperty] = useState<any>(null);
+  console.log("This is property", property);
   const [isLoading, setIsLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -265,10 +266,10 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                   />
                 </div>
                 <div className="border-t pt-4">
-                  <h3 className="font-medium mb-2">Contact Information</h3>
-                  <p className="text-sm">John Doe (Property Manager)</p>
-                  <p className="text-sm">john.doe@example.com</p>
-                  <p className="text-sm">(123) 456-7890</p>
+                  <h3 className="font-medium mb-2">Owners Contact Information</h3>
+                  <p className="text-sm">{property.landlordId.name}</p>
+                  <p className="text-sm">{property.landlordId.email}</p>
+                  <p className="text-sm">{property.landlordId.phone}</p>
                 </div>
               </div>
             </CardContent>

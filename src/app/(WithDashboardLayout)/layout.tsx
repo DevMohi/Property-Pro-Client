@@ -7,7 +7,7 @@ export default function LandlordLayout({ children }: { children: ReactNode }) {
     icon: "Home" | "Building2" | "ClipboardList" | "User" | "Settings";
     href: string;
   }[] = [
-    { title: "Dashboard", icon: "Home", href: "/landlord" },
+    { title: "Dashboard", icon: "Home", href: "/landlord/dashboard" },
     { title: "Properties", icon: "Building2", href: "/landlord/properties" },
     {
       title: "Rental Requests",

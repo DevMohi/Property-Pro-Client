@@ -81,16 +81,6 @@ const DashboardPage = async () => {
             </div>
           </Suspense>
         </TabsContent>
-        <TabsContent value="requests" className="mt-4">
-          <Suspense fallback={<RequestListSkeleton />}>
-            {/* <RequestList limit={3} />  */}
-            <div className="mt-4 text-right">
-              <Button variant="outline" asChild>
-                <Link href="/landlord/requests">View All Requests</Link>
-              </Button>
-            </div>
-          </Suspense>
-        </TabsContent>
       </Tabs>
     </div>
   );
@@ -149,31 +139,6 @@ function PropertyListSkeleton() {
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-[200px]" />
                   <Skeleton className="h-4 w-[150px]" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-    </div>
-  );
-}
-
-function RequestListSkeleton() {
-  return (
-    <div className="space-y-4">
-      {Array(3)
-        .fill(0)
-        .map((_, i) => (
-          <Card key={i}>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-[200px]" />
-                  <Skeleton className="h-4 w-[150px]" />
-                </div>
-                <div className="ml-auto">
-                  <Skeleton className="h-8 w-[100px]" />
                 </div>
               </div>
             </CardContent>

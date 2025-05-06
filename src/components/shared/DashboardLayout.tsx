@@ -30,13 +30,13 @@ export const iconMap = {
   Settings,
 };
 
-type NavItem = {
+export type NavItem = {
   title: string;
   icon: keyof typeof iconMap;
   href: string;
 };
 
-type DashboardLayoutProps = {
+export type DashboardLayoutProps = {
   children: React.ReactNode;
   basePath: string;
   navItems: NavItem[];

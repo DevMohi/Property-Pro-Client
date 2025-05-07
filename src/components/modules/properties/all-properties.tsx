@@ -7,8 +7,7 @@ import { Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-// import PropertyGrid from "@/components/properties/property-grid";
-// import PropertyTable from "@/components/properties/property-table";
+
 import {
   Sheet,
   SheetClose,
@@ -276,7 +275,7 @@ export default function PropertiesPage() {
   );
 }
 
-function PropertyGridSkeleton() {
+export function PropertyGridSkeleton() {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {Array(6)

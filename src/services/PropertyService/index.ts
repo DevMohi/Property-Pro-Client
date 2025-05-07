@@ -3,6 +3,24 @@
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
+export const getAllListings = async () => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/landlords/listings`,
+      {
+        method: "GET",
+        next: {
+          tags: ["PROPERTY"],
+        },
+      }
+    );
+
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
 export const getMyListings = async () => {
   try {
     const res = await fetch(

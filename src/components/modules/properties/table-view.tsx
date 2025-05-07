@@ -30,7 +30,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { deleteListing, getMyListings } from "@/services/PropertyService";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 interface PropertyTableProps {
   searchQuery?: string;
@@ -57,8 +56,6 @@ export default function PropertyTable({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
-
-  const router = useRouter();
 
   useEffect(() => {
     const fetchListings = async () => {

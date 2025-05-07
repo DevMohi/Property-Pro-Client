@@ -45,7 +45,49 @@ export const getSingleListing = async (id: string) => {
   }
 };
 
+export const getMyListingsRequests = async () => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/rental-requests/my-listing-requests`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+        },
+      }
+    );
+    revalidateTag("PROPERTY");
 
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
+export const createListings = async ({
+  propertiesData,
+}: {
+  propertiesData: FormData;
+}): Promise<any> => {
+  console.log("data in update", propertiesData);
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/landlords/listings`,
+      {
+        method: "POST",
+        body: propertiesData,
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+        },
+      }
+    );
+    revalidateTag("PROPERTY");
+
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};
 
 // services/PropertyService.ts
 export const updateListing = async ({
@@ -89,11 +131,9 @@ export const deleteListing = async (id: string) => {
         headers: {
           Authorization: (await cookies()).get("accessToken")!.value,
         },
-        next: {
-          tags: ["PROPERTY"],
-        },
       }
     );
+    revalidateTag("PROPERTY");
 
     return res.json();
   } catch (error: any) {

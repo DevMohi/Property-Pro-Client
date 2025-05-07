@@ -164,7 +164,7 @@ export default function PropertyTable({
                 </Badge>
               </TableCell>
               <TableCell>
-                {property.bedrooms} bd | {property.bathrooms} ba |{" "}
+                {property.bedrooms} bed | {property.bathrooms} bath |{" "}
                 {property.area} sqft
               </TableCell>
               <TableCell>

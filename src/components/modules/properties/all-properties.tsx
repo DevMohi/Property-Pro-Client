@@ -85,7 +85,7 @@ export default function PropertiesPage() {
           <p className="text-muted-foreground">Manage your rental properties</p>
         </div>
         <Button asChild className="bg-teal-600 hover:bg-teal-700">
-          <Link href="/landlord/properties/new">
+          <Link href="/landlord/properties/add-property">
             <Plus className="mr-2 h-4 w-4" />
             Add Property
           </Link>
@@ -263,12 +263,12 @@ export default function PropertiesPage() {
         </TabsList>
         <TabsContent value="grid" className="mt-4">
           <Suspense fallback={<PropertyGridSkeleton />}>
-            <PropertyGrid searchQuery={searchQuery} filters={filters} /> 
+            <PropertyGrid searchQuery={searchQuery} filters={filters} />
           </Suspense>
         </TabsContent>
         <TabsContent value="table" className="mt-4">
           <Suspense fallback={<PropertyTableSkeleton />}>
-            <PropertyTable searchQuery={searchQuery} filters={filters} /> 
+            <PropertyTable searchQuery={searchQuery} filters={filters} />
           </Suspense>
         </TabsContent>
       </Tabs>

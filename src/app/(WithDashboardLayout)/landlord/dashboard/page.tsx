@@ -25,7 +25,7 @@ const DashboardPage = async () => {
           </p>
         </div>
         <Button asChild className="bg-teal-600 hover:bg-teal-700">
-          <Link href="/landlord/properties/new">
+          <Link href="/landlord/properties/add-property">
             <Plus className="mr-2 h-4 w-4" />
             Add Property
           </Link>

@@ -12,6 +12,7 @@ import {
   Trash2,
   ArrowLeft,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,41 +26,44 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { deleteListing, getSingleListing } from "@/services/PropertyService";
+import { toast } from "sonner";
+import { useUser } from "@/context/UserContext";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { createRequest } from "@/services/TenantService";
-import { toast } from "sonner";
-import { useUser } from "@/context/UserContext";
 import NMContainer from "@/components/ui/core/NMContainer";
-import { deleteListing, getSingleListing } from "@/services/PropertyService";
 
 const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
   const { user } = useUser();
+  console.log("Inside properties", user);
+
+  const {
+    register,
+    handleSubmit,
+
+    formState: { errors, isSubmitting },
+  } = useForm<{ moveInDate: string; message: string }>();
+
+  console.log(params);
   const router = useRouter();
+  // const { toast } = useToast();
   const [property, setProperty] = useState<any>(null);
+
   const [isLoading, setIsLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<{
-    moveInDate: string;
-    message: string;
-    rentalDuration: string;
-  }>();
-
   useEffect(() => {
     const fetchProperty = async () => {
       setIsLoading(true);
       try {
         const res = await getSingleListing(params.id);
-        setProperty(res?.data);
+        setProperty(res?.data); // Update this if your API shape is different
       } catch (err) {
         console.error("Error fetching listing", err);
       } finally {
@@ -70,33 +74,8 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
     fetchProperty();
   }, [params.id]);
 
-  const handleRequestSubmit = async (formValues: {
-    moveInDate: string;
-    message: string;
-    rentalDuration: string;
-  }) => {
-    try {
-      const payload = {
-        rentalHouseId: params.id,
-        moveInDate: new Date(formValues.moveInDate).toISOString(), // Ensure the moveInDate is in the correct format
-        rentalDuration: formValues.rentalDuration,
-        message: formValues.message,
-      };
-
-      const res = await createRequest(payload);
-      if (res.success) {
-        toast.success(res?.message);
-      } else {
-        toast.warning(res.message || "Something went wrong.");
-      }
-      setRequestSent(true);
-      setRequestModalOpen(false);
-    } catch (err: any) {
-      const fallbackMessage = "Failed to send request. Please try again.";
-      const errorMessage = err?.data?.message || fallbackMessage;
-      toast.error(errorMessage);
-    }
-  };
+  // const [deleteProperty, { isLoading: isDeleting }] =
+  //   useDeleteListingMutation();
 
   const handleDelete = async (id: string) => {
     try {
@@ -112,6 +91,39 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
     } catch (error: any) {
       toast.error(error);
       console.error("Error deleting property:", error);
+    }
+  };
+
+  const handleRequestSubmit = async (formValues: {
+    moveInDate: string;
+    message: string;
+  }) => {
+    try {
+      const payload = {
+        products: params.id,
+        message: formValues.message,
+      };
+
+      const res = await createRequest(payload);
+
+      if (res?.success === false) {
+        toast.warning(res.message || "Something went wrong.");
+        return;
+      }
+
+      setRequestSent(true);
+      setRequestModalOpen(false);
+
+      if (res?.success) {
+        toast.success("Rental request sent!");
+      } else {
+        toast.error("Error");
+      }
+    } catch (err: any) {
+      const fallbackMessage = "Failed to send request. Please try again.";
+      const errorMessage = err?.data?.message || fallbackMessage;
+
+      toast.error(errorMessage);
     }
   };
 
@@ -141,13 +153,12 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
               {property.title}
             </h1>
           </div>
-
           {user?.role === "landlord" && (
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 onClick={() =>
-                  router.push(`/landlord/properties/${params.id}/edit`)
+                  router.push(/landlord/properties/${params.id}/edit)
                 }
               >
                 <Pencil className="h-4 w-4" /> Edit
@@ -208,15 +219,15 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                   <button
                     key={index}
                     onClick={() => setActiveImage(index)}
-                    className={`relative h-16 w-24 overflow-hidden rounded-md border-2 ${
+                    className={relative h-16 w-24 overflow-hidden rounded-md border-2 ${
                       activeImage === index
                         ? "border-teal-600"
                         : "border-transparent"
-                    }`}
+                    }}
                   >
                     <Image
                       src={image}
-                      alt={`Image ${index + 1}`}
+                      alt={Image ${index + 1}}
                       fill
                       className="object-cover"
                     />
@@ -228,6 +239,7 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
             <Tabs defaultValue="details" className="mt-6">
               <TabsList>
                 <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="amenities">Amenities</TabsTrigger>
                 <TabsTrigger value="location">Location</TabsTrigger>
               </TabsList>
 
@@ -242,28 +254,22 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                       {property.description}
                     </p>
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-muted-foreground">
-                          Status
-                        </span>
+                      <DetailItem label="Status">
                         <Badge
                           className={
                             property.houseStatus === "available"
                               ? "bg-green-500"
+                              : property.houseStatus === "pending"
+                              ? "bg-yellow-500"
                               : "bg-blue-500"
                           }
                         >
                           {property.houseStatus}
                         </Badge>
-                      </div>
-                      <div>
-                        <span className="text-xs text-muted-foreground">
-                          Listed On
-                        </span>
-                        <p className="text-sm font-medium">
-                          {new Date(property.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
+                      </DetailItem>
+                      <DetailItem label="Listed On">
+                        {property.createdAt}
+                      </DetailItem>
                     </div>
                   </CardContent>
                 </Card>
@@ -301,18 +307,26 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                     </p>
                   </div>
                   <div className="flex justify-between border-t pt-4">
-                    <div className="flex items-center gap-2">
-                      <Bed className="h-4 w-4 text-muted-foreground" />
-                      <span>{property.bedrooms} Beds</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Bath className="h-4 w-4 text-muted-foreground" />
-                      <span>{property.bathrooms} Baths</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <SquareFeet className="h-4 w-4 text-muted-foreground" />
-                      <span>{property.area} sqft</span>
-                    </div>
+                    <SummaryItem
+                      icon={<Bed />}
+                      label={${property.bedrooms} Beds}
+                    />
+                    <SummaryItem
+                      icon={<Bath />}
+                      label={${property.bathrooms} Baths}
+                    />
+                    <SummaryItem
+                      icon={<SquareFeet />}
+                      label={${property.area} sqft}
+                    />
+                  </div>
+                  <div className="border-t pt-4">
+                    <h3 className="font-medium mb-2">
+                      Owners Contact Information
+                    </h3>
+                    <p className="text-sm">{property.landlordId.name}</p>
+                    <p className="text-sm">{property.landlordId.email}</p>
+                    <p className="text-sm">{property.landlordId.phone}</p>
                   </div>
                 </div>
                 {user?.role === "tenant" &&
@@ -334,74 +348,94 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                   ))}
               </CardContent>
             </Card>
+
+            <Dialog open={requestModalOpen} onOpenChange={setRequestModalOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Request Rental</DialogTitle>
+                </DialogHeader>
+                <form
+                  onSubmit={handleSubmit(handleRequestSubmit)}
+                  className="space-y-4"
+                >
+                  <div>
+                    <Label>Move-in Date</Label>
+                    <Input
+                      type="date"
+                      {...register("moveInDate", { required: true })}
+                    />
+                    {errors.moveInDate && (
+                      <p className="text-sm text-red-500">
+                        Move-in date is required
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label>Message</Label>
+                    <Input
+                      className="my-1"
+                      type="text"
+                      placeholder="Message to landlord (minimum 10 words)"
+                      {...register("message", {
+                        required: "Message is required",
+                        validate: (value) =>
+                          value.trim().split(/\s+/).length >= 10 ||
+                          "Message must be at least 10 words",
+                      })}
+                    />
+                    {errors.message && (
+                      <p className="text-sm text-red-500">
+                        {errors.message.message}
+                      </p>
+                    )}
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-teal-600 hover:bg-teal-700"
+                    >
+                      {isSubmitting ? "Sending..." : "Send Request"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
-
-      {/* Request Modal */}
-      <Dialog open={requestModalOpen} onOpenChange={setRequestModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Request Rental</DialogTitle>
-          </DialogHeader>
-          <form
-            onSubmit={handleSubmit(handleRequestSubmit)}
-            className="space-y-4"
-          >
-            <div>
-              <Label>Move-in Date</Label>
-              <Input
-                type="date"
-                {...register("moveInDate", { required: true })}
-              />
-              {errors.moveInDate && (
-                <p className="text-sm text-red-500">Move-in date is required</p>
-              )}
-            </div>
-            <div>
-              <Label>Rental Duration</Label>
-              <Input
-                type="text"
-                placeholder="e.g., 6 months"
-                {...register("rentalDuration", { required: true })}
-              />
-              {errors.rentalDuration && (
-                <p className="text-sm text-red-500">
-                  Rental duration is required
-                </p>
-              )}
-            </div>
-            <div>
-              <Label>Message</Label>
-              <Input
-                className="my-1"
-                type="text"
-                placeholder="Message to landlord (minimum 10 words)"
-                {...register("message", {
-                  required: "Message is required",
-                  validate: (value) =>
-                    value.trim().split(/\s+/).length >= 10 ||
-                    "Message must be at least 10 words",
-                })}
-              />
-              {errors.message && (
-                <p className="text-sm text-red-500">{errors.message.message}</p>
-              )}
-            </div>
-            <DialogFooter>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-teal-600 hover:bg-teal-700"
-              >
-                {isSubmitting ? "Sending..." : "Send Request"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </NMContainer>
   );
 };
+
+function DetailItem({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-sm font-medium">{children}</span>
+    </div>
+  );
+}
+
+function SummaryItem({
+  icon,
+  label,
+}: {
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      {icon}
+      <span>{label}</span>
+    </div>
+  );
+}
 
 export default PropertyDetailPage;

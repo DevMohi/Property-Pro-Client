@@ -63,7 +63,7 @@ const ListingCard = ({ listing }: ListingCardProps) => {
       <div className="flex items-center justify-between border-t px-4 py-3">
         <p className="text-md font-bold">${listing.rent}/month</p>
         <Link
-          href={`/properties/${listing._id}`}
+          href={`/listings/${listing._id}`}
           className="text-sm text-teal-600 font-medium hover:underline"
         >
           View Details

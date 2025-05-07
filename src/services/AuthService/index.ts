@@ -86,7 +86,7 @@ export const getCurrentUser = async () => {
   let decodedData = null;
 
   if (accessToken) {
-    decodedData = await jwtDecode(accessToken as any);
+    decodedData = await jwtDecode(accessToken);
     return decodedData;
   } else {
     return null;

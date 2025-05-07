@@ -32,7 +32,8 @@ const LoginForm = () => {
   } = form;
 
   // User context and routing
-  const { setUser } = useUser();
+  const { setUser, user } = useUser();
+  console.log(user);
   // const searchParams = useSearchParams();
   // const redirect = searchParams.get("redirectPath") || "/";
   const router = useRouter();

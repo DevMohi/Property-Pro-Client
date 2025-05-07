@@ -1,8 +1,32 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
+import { FieldValues } from "react-hook-form";
 
 // 1. Tenant: Get my rental requests
+
+export const createRequest = async (data: FieldValues) => {
+  console.log("Inside create req", data);
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/rental-requests`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    revalidateTag("RENTAL_REQUESTS");
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
 export const getMyRentalRequests = async () => {
   try {
     const res = await fetch(

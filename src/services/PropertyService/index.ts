@@ -51,16 +51,17 @@ export const updateListing = async ({
   data,
 }: {
   id: string;
-  data: any;
+  data: FormData;
 }) => {
   try {
+    console.log("Id in update", id);
+    console.log("data in update", data);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API}/landlords/listings/${id}`,
       {
         method: "PATCH",
         headers: {
           Authorization: (await cookies()).get("accessToken")!.value,
-          "Content-Type": "application/json", // Sending JSON instead of FormData
         },
         body: data, // Pass the form data as JSON
       }
@@ -82,21 +83,17 @@ export const deleteListing = async (id: string) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API}/landlords/${id}`,
       {
-        method: "DELETE", // Using DELETE method
+        method: "DELETE",
         headers: {
           Authorization: (await cookies()).get("accessToken")!.value,
         },
         next: {
-          tags: ["PROPERTY"], // Optional: Revalidate the tag or trigger any caching actions
+          tags: ["PROPERTY"],
         },
       }
     );
 
-    // if (!res.ok) {
-    //   throw new Error("Failed to delete listing");
-    // }
-
-    return res.json(); // Return the response from the server
+    return res.json();
   } catch (error: any) {
     console.error("Error deleting listing:", error);
     return Error(error);

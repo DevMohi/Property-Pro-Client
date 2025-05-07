@@ -73,19 +73,21 @@ const EditPage = ({ params }: { params: { id: string } }) => {
     console.log("Form submitted with values:", values);
     try {
       // Create the data object
+      const formData = new FormData();
       const stringifiedValues = Object.fromEntries(
         Object.entries(values)
           .filter(([key]) => key !== "imageUrls") // Remove imageUrls from the request
           .map(([key, value]) => [key, String(value)]) // Ensure all values are strings
       );
 
-      // Wrap the data under the 'data' key as expected by the server
-      const data = { data: stringifiedValues };
+      formData.append("data", JSON.stringify(stringifiedValues));
 
-      // Call the updateListing function with the formatted data
+      // // Wrap the data under the 'data' key as expected by the server
+      // const data = { data: stringifiedValues };
+
       const res = await updateListing({
         id, // Passing the property id
-        data, // Pass the data as a JSON object
+        data: formData, // Pass the data as a JSON object
       });
 
       // Handle the response from the update request

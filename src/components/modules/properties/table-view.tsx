@@ -19,9 +19,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { getMyListings } from "@/services/PropertyService";
+import { deleteListing, getMyListings } from "@/services/PropertyService";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface PropertyTableProps {
   searchQuery?: string;
@@ -47,6 +56,9 @@ export default function PropertyTable({
   const [properties, setProperties] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [openDialogId, setOpenDialogId] = useState<string | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -64,6 +76,23 @@ export default function PropertyTable({
 
     fetchListings();
   }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await deleteListing(id);
+
+      if (res?.success) {
+        toast.success(res.message || "Property deleted successfully");
+        setProperties((prev) => prev.filter((property) => property._id !== id));
+        setOpenDialogId(null);
+      } else {
+        toast.error(res?.message || "Failed to delete property");
+      }
+    } catch (error: any) {
+      toast.error("An unexpected error occurred.");
+      console.error("Error deleting property:", error);
+    }
+  };
 
   const filteredProperties = useMemo(() => {
     return properties.filter((property) => {
@@ -102,19 +131,12 @@ export default function PropertyTable({
     });
   }, [searchQuery, filters, properties]);
 
-  // UI States
-
-  if (isLoading || !properties) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
+  if (isLoading) return <p>Loading...</p>;
+  if (error)
     return (
       <div className="flex justify-center py-12 text-red-500">{error}</div>
     );
-  }
-
-  if (filteredProperties.length === 0) {
+  if (filteredProperties.length === 0)
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <p className="text-lg text-muted-foreground">
@@ -122,7 +144,6 @@ export default function PropertyTable({
         </p>
       </div>
     );
-  }
 
   return (
     <div className="rounded-md border">
@@ -188,11 +209,44 @@ export default function PropertyTable({
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-red-600">
+                    <DropdownMenuItem
+                      className="text-red-600"
+                      onClick={() => setOpenDialogId(property._id)}
+                    >
                       Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+
+                {/* Modal inside map */}
+                <Dialog
+                  open={openDialogId === property._id}
+                  onOpenChange={() => setOpenDialogId(null)}
+                >
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Are you sure?</DialogTitle>
+                    </DialogHeader>
+                    <p>
+                      This action cannot be undone. This will permanently delete
+                      the property.
+                    </p>
+                    <DialogFooter className="flex justify-end gap-2 pt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => setOpenDialogId(null)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleDelete(property._id)}
+                      >
+                        Confirm Delete
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </TableCell>
             </TableRow>
           ))}

@@ -1,68 +1,98 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getMyListingsRequests } from "@/services/PropertyService";
+import {
+  getMyListingsRequests,
+  respondToListing,
+} from "@/services/PropertyService";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const RequestList = () => {
+  const [requests, setRequests] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  const fetchRequests = async () => {
+    setIsLoading(true);
+    try {
+      const res = await getMyListingsRequests();
+      setRequests(res?.data || []);
+    } catch (err) {
+      console.error("Error fetching listing", err);
+      toast.error("Failed to fetch rental requests");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleResponse = async (
     requestId: string,
     status: "Approved" | "Rejected"
   ) => {
-    // try {
-    //   await respondToRequest({ requestId, data: { status } }).unwrap();
-    // } catch (err) {
-    //   console.error("Failed to respond to request:", err);
-    // }
-    // console.log("hello");
-    console.log("hello");
+    try {
+      setUpdatingId(requestId);
+      const res = await respondToListing({ requestId, data: { status } });
+      if (res?.success) {
+        toast.success(res.message);
+
+        // ✅ Optimistically update request status in local state
+        setRequests((prev) =>
+          prev.map((req) => (req._id === requestId ? { ...req, status } : req))
+        );
+      } else {
+        toast.error(res.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Failed to respond to request:", err);
+      toast.error("Request update failed");
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
-  const [requests, setRequests] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
-    const fetchProperty = async () => {
-      setIsLoading(true);
-      try {
-        const res = await getMyListingsRequests();
-        console.log("Inside res", res);
-        setRequests(res?.data); // Update this if your API shape is different
-      } catch (err) {
-        console.error("Error fetching listing", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProperty();
+    fetchRequests();
   }, []);
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex justify-center py-10 text-muted-foreground">
+        Loading rental requests...
+      </div>
+    );
+  }
+
+  if (!requests.length) {
+    return (
+      <div className="flex justify-center py-10 text-muted-foreground">
+        No rental requests found.
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
-      {requests.map((request: any) => (
+      {requests.map((request) => (
         <div
           key={request._id}
           className="rounded-lg border bg-card text-card-foreground shadow-sm"
         >
           <div className="p-6 space-y-2">
-            {/* Tenant Information */}
+            {/* Tenant Info */}
             <div>
-              <p className="font-semibold">Tenant: {request.tenantId?.name}</p>
+              <p className="font-semibold">
+                Tenant: {request.tenantId?.name || "Unknown"}
+              </p>
               <p className="text-sm text-muted-foreground">
                 {request.tenantId?.email} | {request.tenantId?.phone}
               </p>
             </div>
 
-            {/* Property Information */}
+            {/* Property Info */}
             <div>
               <p className="font-semibold">
-                Property: {request.rentalHouseId?.title}
+                Property: {request.rentalHouseId?.title || "Unknown"}
               </p>
               <p className="text-sm text-muted-foreground">
                 Rent: ${request.rentalHouseId?.rent} | Location:{" "}
@@ -70,7 +100,7 @@ const RequestList = () => {
               </p>
             </div>
 
-            {/* Request Details */}
+            {/* Request Message */}
             <div>
               <p className="text-sm">Message: {request.message}</p>
               <p className="text-sm">
@@ -81,7 +111,7 @@ const RequestList = () => {
               </p>
             </div>
 
-            {/* Action Buttons */}
+            {/* Status / Actions */}
             <div className="flex items-center justify-between mt-2">
               <p className="text-sm">
                 Status:{" "}
@@ -95,16 +125,18 @@ const RequestList = () => {
                   <Button
                     size="sm"
                     variant="outline"
+                    disabled={updatingId === request._id}
                     onClick={() => handleResponse(request._id, "Approved")}
                   >
-                    Approve
+                    {updatingId === request._id ? "Approving..." : "Approve"}
                   </Button>
                   <Button
                     size="sm"
                     variant="destructive"
+                    disabled={updatingId === request._id}
                     onClick={() => handleResponse(request._id, "Rejected")}
                   >
-                    Reject
+                    {updatingId === request._id ? "Rejecting..." : "Reject"}
                   </Button>
                 </div>
               ) : (

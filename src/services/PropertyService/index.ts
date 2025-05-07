@@ -54,9 +54,11 @@ export const getMyListingsRequests = async () => {
         headers: {
           Authorization: (await cookies()).get("accessToken")!.value,
         },
+        next: {
+          tags: ["PROPERTY"],
+        },
       }
     );
-    revalidateTag("PROPERTY");
 
     return res.json();
   } catch (error: any) {
@@ -112,6 +114,37 @@ export const updateListing = async ({
     );
 
     // Optionally revalidate the tag or perform any other actions
+    revalidateTag("PROPERTY");
+
+    return res.json(); // Return the updated listing data
+  } catch (error: any) {
+    console.error("Error updating listing:", error);
+    return Error(error);
+  }
+};
+
+export const respondToListing = async ({
+  requestId,
+  data,
+}: {
+  requestId: string;
+  data: { status: string };
+}) => {
+  try {
+    console.log("Id in update", requestId);
+    console.log("data in update", data);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/landlords/requests/${requestId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
     revalidateTag("PROPERTY");
 
     return res.json(); // Return the updated listing data

@@ -45,6 +45,8 @@ export const getSingleListing = async (id: string) => {
   }
 };
 
+
+
 // services/PropertyService.ts
 export const updateListing = async ({
   id,

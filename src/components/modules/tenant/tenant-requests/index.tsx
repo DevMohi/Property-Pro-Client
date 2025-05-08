@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { getMyRentalRequests } from "@/services/TenantService";
+import { getMyRentalRequests, paymentInitiate } from "@/services/TenantService";
 
 // Import the server-side function to get rental requests
 
@@ -31,30 +31,21 @@ const MyRequestsPage = () => {
   }, []);
 
   // Handle payment button click
-  const handleSubmit = async (tenantRequestId: string) => {
-    console.log(tenantRequestId);
+  const handleSubmit = async (rentalRequestId: string) => {
+    console.log("hello");
+    console.log(rentalRequestId);
     try {
-      setIsPaying(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_API}/payment/initiate`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tenantRequestId }),
-        }
-      );
-      const paymentLink = await response.json();
-      if (paymentLink?.data) {
-        window.open(paymentLink?.data, "_blank"); // Open payment URL
+      const response = await paymentInitiate({
+        rentalRequestId: rentalRequestId,
+      });
+      console.log(response);
+      if (response?.data) {
+        window.open(response?.data, "_blank");
       }
     } catch (error) {
-      alert("Payment initiation failed");
+      alert(error);
       console.error("Payment initiation failed", error);
-    } finally {
-      setIsPaying(false);
+      alert("Failed to initiate payment.");
     }
   };
 

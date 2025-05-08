@@ -94,3 +94,25 @@ export const getRequestsForLandlord = async () => {
     return Error(error);
   }
 };
+
+export const paymentInitiate = async (data) => {
+  console.log("Inside payment", data);
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/order/rental-payment`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
+    return res.json();
+  } catch (error: any) {
+    console.error("getRequestsForLandlord error:", error);
+    return Error(error);
+  }
+};

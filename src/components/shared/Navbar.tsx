@@ -35,7 +35,7 @@ export default function Navbar() {
 
   return (
     <header className="border-b bg-background w-full sticky top-0 z-10">
-      <div className="container mx-auto px-5 flex justify-between items-center h-16">
+      <div className="container mx-auto flex justify-between items-center h-16">
         {/* Logo */}
         <Link href="/" className="flex items-center text-2xl font-black">
           <Logo /> Next Mart

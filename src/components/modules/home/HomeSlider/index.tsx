@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
+
 const slides = [
   {
     title: "Smart Rental Housing",
@@ -27,7 +28,7 @@ export default function HomeSlider() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
-    }, 3000); // Change slide every 3 seconds
+    }, 10000);
     return () => clearInterval(timer);
   }, []);
 
@@ -36,7 +37,7 @@ export default function HomeSlider() {
   const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
 
   return (
-    <div className="relative w-full h-[75vh] overflow-hidden">
+    <div className="relative w-full h-[60vh] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={index}
@@ -49,13 +50,14 @@ export default function HomeSlider() {
             height={1080}
             src={slide.img}
             alt={slide.title}
-            className="w-full h-full object-cover brightness-75"
+            className="w-full h-full object-cover brightness-40"
           />
           <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-4">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               {slide.title}
             </h2>
             <p className="text-lg md:text-xl max-w-2xl">{slide.desc}</p>
+          
           </div>
         </div>
       ))}
@@ -63,13 +65,13 @@ export default function HomeSlider() {
       {/* Navigation buttons */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-70 transition z-20"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-70 transition z-20 cursor-pointer"
       >
         <ChevronLeft />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-70 transition z-20"
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-70 transition z-20 cursor-pointer"
       >
         <ChevronRight />
       </button>

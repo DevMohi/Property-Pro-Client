@@ -1,8 +1,15 @@
 "use client";
 
-import Logo from "@/app/assets/svgs/Logo";
 import { Button } from "../ui/button";
-import { Heart, LogOut, ShoppingBag, Menu, X } from "lucide-react";
+import {
+  Heart,
+  LogOut,
+  ShoppingBag,
+  Menu,
+  X,
+  Home,
+  ChevronDown,
+} from "lucide-react"; // Import ChevronDown
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -38,10 +45,73 @@ export default function Navbar() {
       <div className="container mx-auto flex justify-between items-center h-16">
         {/* Logo */}
         <Link href="/" className="flex items-center text-2xl font-black">
-          <Logo /> Next Mart
+          <div className="flex items-center gap-2 py-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-600 text-white">
+              <Home className="h-4 w-4" />
+            </div>
+            <div className="font-semibold">PropertyPro</div>
+          </div>
         </Link>
 
-        {/* Desktop Nav */}
+        {/* Middle Navigation Links */}
+        <nav className="hidden lg:flex gap-6 items-center">
+          <Link
+            href="/"
+            className={`font-semibold ${
+              pathname === "/"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            Home
+          </Link>
+          <Link
+            href="/listings"
+            className={`font-semibold ${
+              pathname === "/listings"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            Listings
+          </Link>
+          <Link
+            href="/about"
+            className={`font-semibold ${
+              pathname === "/about"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            About Us
+          </Link>
+
+          {/* Explore Dropdown with Arrow */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <span
+                className={`font-semibold ${
+                  pathname.includes("/explore")
+                    ? "text-teal-600"
+                    : "text-gray-800 hover:text-teal-600"
+                }`}
+              >
+                Explore{" "}
+                <ChevronDown className="inline-block ml-2 h-4 w-4 text-gray-800" />
+              </span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <Link href="/faq">
+                <DropdownMenuItem>FAQ</DropdownMenuItem>
+              </Link>
+              <Link href="/privacy-policy">
+                <DropdownMenuItem>Privacy & Policy</DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </nav>
+
+        {/* Desktop Nav for Cart, Heart, etc. */}
         <nav className="hidden lg:flex gap-2 items-center">
           <Button variant="outline" className="rounded-full p-0 size-10">
             <Heart />
@@ -109,10 +179,75 @@ export default function Navbar() {
         } bg-white p-5 shadow-lg`}
       >
         <div className="flex flex-col gap-4">
+          {/* Middle Nav Links for Mobile */}
+          <Link
+            href="/"
+            className={`text-teal-600 font-semibold ${
+              pathname === "/"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            Home
+          </Link>
+          <Link
+            href="/tenants"
+            className={`text-teal-600 font-semibold ${
+              pathname === "/tenants"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            Tenants
+          </Link>
+          <Link
+            href="/about"
+            className={`text-teal-600 font-semibold ${
+              pathname === "/about"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            About Us
+          </Link>
+          <Link
+            href="/contact"
+            className={`text-teal-600 font-semibold ${
+              pathname === "/contact"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            Contact Us
+          </Link>
+
+          {/* Cart and User related */}
           <Link href="/cart">
             <Button variant="outline" className="rounded-full w-full">
               <ShoppingBag /> Cart
             </Button>
+          </Link>
+
+          {/* Additional links for mobile */}
+          <Link
+            href="/faq"
+            className={`text-teal-600 font-semibold ${
+              pathname === "/faq"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            FAQ
+          </Link>
+          <Link
+            href="/privacy-policy"
+            className={`text-teal-600 font-semibold ${
+              pathname === "/privacy-policy"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            Privacy & Policy
           </Link>
 
           {user?.email ? (

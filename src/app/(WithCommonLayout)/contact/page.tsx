@@ -2,8 +2,8 @@ import Image from 'next/image';
 
 const ContactUsPage = () => {
   return (
-    <div className="w-[90%] mx-auto flex justify-center px-4 py-10">
-      <div className="flex flex-col md:flex-row w-full max-w-7xl bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div className="container mx-auto flex justify-center  py-10">
+      <div className="flex flex-col md:flex-row w-full bg-white rounded-2xl shadow-lg overflow-hidden">
         {/* Form - One Third */}
         <div className="w-full md:w-1/3 p-8 pt-0">
           <h2 className="text-4xl font-bold mb-6 text-gray-800">

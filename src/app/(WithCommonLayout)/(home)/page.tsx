@@ -5,6 +5,7 @@ import RentTips from "@/components/modules/home/Tips";
 // import StandOutSection from "@/components/modules/home/StandOut";
 import FeaturedSection from "@/components/modules/home/FeaturedSection";
 import NewsletterSection from "@/components/modules/home/Newsletter";
+import TestimonialSection from "@/components/modules/home/Testimonials";
 
 // import HomeSlider from "@/components/modules/home/HomeSlider";
 
@@ -15,7 +16,9 @@ const HomePage = async () => {
       <ClientHomePage user={user} />
       <FeaturedSection /> 
       {/* <HomeSlider />  */}
+      
       <RentTips />
+      <TestimonialSection />
       <NewsletterSection />
     </div>
   );

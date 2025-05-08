@@ -20,7 +20,14 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-import { Building2, ClipboardList, Home, Settings, User } from "lucide-react";
+import {
+  Building2,
+  ClipboardList,
+  CreditCard,
+  Home,
+  Settings,
+  User,
+} from "lucide-react";
 
 export const iconMap = {
   Home,
@@ -28,6 +35,7 @@ export const iconMap = {
   ClipboardList,
   User,
   Settings,
+  CreditCard,
 };
 
 export type NavItem = {

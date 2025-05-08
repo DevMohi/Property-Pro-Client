@@ -13,7 +13,6 @@ const AllProductsPage = async () => {
         Your Next Favorite Home Awaits
       </h2>
       <h6>Showing approx 6 available listings for you</h6>
-      <div className="grid grid-cols-6 gap-8 my-5"></div>
       <AllProducts listings={listings} />
     </NMContainer>
   );

@@ -8,6 +8,7 @@ import NewsletterSection from "@/components/modules/home/Newsletter";
 import TestimonialSection from "@/components/modules/home/Testimonials";
 import HowItWorksSection from "@/components/modules/home/HowItWorks";
 import WhyChooseUsSection from "@/components/modules/home/WhyChooseUsSection";
+import ListingSection from "@/components/modules/home/CardSection";
 
 // import HomeSlider from "@/components/modules/home/HomeSlider";
 
@@ -17,6 +18,7 @@ const HomePage = async () => {
     <div>
       <ClientHomePage user={user} />
       <FeaturedSection />
+      <ListingSection />
       <HowItWorksSection />
       <RentTips />
       <WhyChooseUsSection />

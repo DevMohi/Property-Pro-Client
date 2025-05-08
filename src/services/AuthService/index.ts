@@ -50,6 +50,7 @@ export const registerUser = async (userData: FieldValues) => {
 // };
 
 export const loginUser = async (userData: FieldValues) => {
+  console.log("Inside login", userData);
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/auth/login`, {
       method: "POST",
@@ -60,6 +61,7 @@ export const loginUser = async (userData: FieldValues) => {
     });
 
     const result = await res.json();
+    console.log(result);
     const storeCookies = await cookies();
 
     if (result?.success) {
@@ -78,7 +80,6 @@ export const loginUser = async (userData: FieldValues) => {
     return Error(error);
   }
 };
-
 
 export const getCurrentUser = async () => {
   const storeCookies = await cookies();

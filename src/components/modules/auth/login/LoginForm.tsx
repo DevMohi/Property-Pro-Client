@@ -49,6 +49,7 @@ const LoginForm = () => {
 
       // Handle success case
       const token = res?.data?.accessToken;
+      // console.log("Inside login form", token);
       if (token) {
         try {
           const decodedUser = jwtDecode<IUser>(token);

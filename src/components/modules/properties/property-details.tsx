@@ -35,6 +35,7 @@ import NMContainer from "@/components/ui/core/NMContainer";
 import { deleteListing, getSingleListing } from "@/services/PropertyService";
 
 const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
+  console.log("params", params);
   const { user } = useUser();
   const router = useRouter();
   const [property, setProperty] = useState<any>(null);
@@ -59,7 +60,7 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
       setIsLoading(true);
       try {
         const res = await getSingleListing(params.id);
-        setProperty(res?.data);
+        setProperty(res?.data); // Update this if your API shape is different
       } catch (err) {
         console.error("Error fetching listing", err);
       } finally {
@@ -69,6 +70,8 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
 
     fetchProperty();
   }, [params.id]);
+
+  console.log(property);
 
   const handleRequestSubmit = async (formValues: {
     moveInDate: string;
@@ -84,13 +87,15 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
       };
 
       const res = await createRequest(payload);
-      if (res.success) {
-        toast.success(res?.message);
-      } else {
+
+      if (res?.success === false) {
         toast.warning(res.message || "Something went wrong.");
+        return;
       }
+
       setRequestSent(true);
       setRequestModalOpen(false);
+      toast.success("Rental request sent!");
     } catch (err: any) {
       const fallbackMessage = "Failed to send request. Please try again.";
       const errorMessage = err?.data?.message || fallbackMessage;
@@ -125,14 +130,16 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <NMContainer>
-      <div className="flex flex-col gap-6 mb-10">
+      <div className="flex flex-col gap-6 my-10">
         {/* Header Section */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.back()}
+              onClick={() =>
+                router.push(`/landlord/properties/${params.id}/edit`)
+              }
               className="h-8 w-8"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -141,7 +148,6 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
               {property.title}
             </h1>
           </div>
-
           {user?.role === "landlord" && (
             <div className="flex gap-2">
               <Button
@@ -179,9 +185,8 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                     <Button
                       variant="destructive"
                       onClick={() => handleDelete(params.id)}
-                      // disabled={isDeleting}
                     >
-                      Delete Property
+                      Delete property
                     </Button>
                   </DialogFooter>
                 </DialogContent>

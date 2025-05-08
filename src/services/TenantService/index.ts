@@ -95,7 +95,8 @@ export const getRequestsForLandlord = async () => {
   }
 };
 
-export const paymentInitiate = async (data) => {
+//Orders are here
+export const paymentInitiate = async (data: any) => {
   console.log("Inside payment", data);
   try {
     const res = await fetch(
@@ -113,6 +114,49 @@ export const paymentInitiate = async (data) => {
     return res.json();
   } catch (error: any) {
     console.error("getRequestsForLandlord error:", error);
+    return Error(error);
+  }
+};
+
+export const verifyPayment = async (orderId: string) => {
+  try {
+    console.log(orderId);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/order/verify?orderId=${orderId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+        },
+        next: {
+          tags: ["Orders"],
+        },
+      }
+    );
+
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
+export const getMyOrders = async () => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/order/my-orders`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+        },
+        next: {
+          tags: ["Orders"],
+        },
+      }
+    );
+
+    return res.json();
+  } catch (error: any) {
     return Error(error);
   }
 };

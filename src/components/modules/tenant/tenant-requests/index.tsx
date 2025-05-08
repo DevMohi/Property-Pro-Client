@@ -10,7 +10,6 @@ import { getMyRentalRequests, paymentInitiate } from "@/services/TenantService";
 const MyRequestsPage = () => {
   const [requests, setRequests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true); // Loading state
-  const [isPaying, setIsPaying] = useState(false); // Payment state
 
   // Fetch rental requests on component mount
   useEffect(() => {
@@ -122,7 +121,6 @@ const MyRequestsPage = () => {
                     className="w-full sm:w-auto"
                     disabled={
                       request?.status !== "Approved" ||
-                      isPaying ||
                       request.paymentStatus === "Paid"
                     }
                     onClick={() => handleSubmit(request._id)}

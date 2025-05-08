@@ -1,7 +1,4 @@
-"use client";
-
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 
 export default function FeaturedSection() {
@@ -11,11 +8,12 @@ export default function FeaturedSection() {
         {/* Image Section */}
         <div className="relative ">
           <Image
-            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kZXJuJTIwaG9tZXN8fDB8fHx8MTYyNzc3MTU1MA&ixlib=rb-1.2.1&q=80&w=1080" // Replace with actual image path
+            src="https://images.unsplash.com/photo-1600585153490-76fb20a32601?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MXxzZWFyY2h8NHx8cHJvcGVydGllc3x8MHx8fHwxNjI4ODIzMzQw&ixlib=rb-1.2.1&q=80&w=1080" // Replace with actual image path
             alt="Property Image"
             width={650}
             height={300}
             className="rounded-xl shadow-lg"
+      
           />
         </div>
 

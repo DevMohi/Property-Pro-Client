@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
-
 const slides = [
   {
     title: "Smart Rental Housing",
@@ -37,7 +36,7 @@ export default function HomeSlider() {
   const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
 
   return (
-    <div className="relative w-full h-[60vh] overflow-hidden">
+    <div className="relative h-[65vh] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={index}
@@ -50,14 +49,14 @@ export default function HomeSlider() {
             height={1080}
             src={slide.img}
             alt={slide.title}
-            className="w-full h-full object-cover brightness-40"
+            className="w-full h-full brightness-40 object-cover"
+
           />
           <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-4">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               {slide.title}
             </h2>
             <p className="text-lg md:text-xl max-w-2xl">{slide.desc}</p>
-          
           </div>
         </div>
       ))}

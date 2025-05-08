@@ -6,6 +6,8 @@ import RentTips from "@/components/modules/home/Tips";
 import FeaturedSection from "@/components/modules/home/FeaturedSection";
 import NewsletterSection from "@/components/modules/home/Newsletter";
 import TestimonialSection from "@/components/modules/home/Testimonials";
+import HowItWorksSection from "@/components/modules/home/HowItWorks";
+import WhyChooseUsSection from "@/components/modules/home/WhyChooseUsSection";
 
 // import HomeSlider from "@/components/modules/home/HomeSlider";
 
@@ -14,10 +16,10 @@ const HomePage = async () => {
   return (
     <div>
       <ClientHomePage user={user} />
-      <FeaturedSection /> 
-      {/* <HomeSlider />  */}
-      
+      <FeaturedSection />
+      <HowItWorksSection />
       <RentTips />
+      <WhyChooseUsSection />
       <TestimonialSection />
       <NewsletterSection />
     </div>

@@ -56,6 +56,7 @@ const PaymentVerificationPage = () => {
         {ordersData.length > 0 ? (
           <div className="space-y-6">
             {ordersData.map((order: any) => {
+              console.log("Order", ordersData);
               const isPaid = order.status === "Paid";
               const bankStatus = order.transaction?.bank_status;
 
@@ -66,10 +67,13 @@ const PaymentVerificationPage = () => {
                 >
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold text-gray-800 mb-1">
-                      {order.product?.title}
+                      Property : {order.rentalHouseId?.title}
                     </h3>
                     <p className="text-gray-600 text-sm mb-2">
-                      {order.product?.location}
+                      Location : {order.rentalHouseId?.location}
+                    </p>
+                    <p className="text-gray-600 text-sm mb-2">
+                      Owner : {order.landlordId?.name}
                     </p>
                     <p className="text-sm text-gray-700 mb-1">
                       <strong>Rent:</strong> ${order.amount}

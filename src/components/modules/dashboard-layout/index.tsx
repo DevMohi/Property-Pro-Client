@@ -6,7 +6,6 @@ import React, { ReactNode } from "react";
 
 const DashboardLayoutPage = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
-  console.log("Inside dashboard layout page", user);
 
   if (user?.role === "landlord") {
     return (

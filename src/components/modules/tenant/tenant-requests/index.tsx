@@ -16,7 +16,6 @@ const MyRequestsPage = () => {
     const fetchRequests = async () => {
       try {
         const data = await getMyRentalRequests();
-        console.log("Inside tenant", data);
         setRequests(data?.data || []);
       } catch (error) {
         console.error("Error fetching rental requests:", error);
@@ -53,6 +52,7 @@ const MyRequestsPage = () => {
   return (
     <div className="p-4 md:p-6 lg:p-8 flex flex-col gap-4 md:gap-6 lg:gap-8">
       {requests?.map((request: any) => {
+        console.log('Request', requests)
         const product = request?.rentalHouseId;
 
         return (
@@ -126,7 +126,7 @@ const MyRequestsPage = () => {
                     onClick={() => handleSubmit(request._id)}
                     size="sm"
                   >
-                    Pay Now
+                    {request.paymentStatus === 'Paid' ? "Paid" : "Pay Now"}
                   </Button>
                 </div>
               </div>

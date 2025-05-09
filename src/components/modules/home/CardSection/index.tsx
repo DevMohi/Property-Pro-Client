@@ -10,7 +10,7 @@ const ListingSection = async () => {
     <div className="container mx-auto py-16">
       {/* Heading and Subheading */}
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-extrabold text-teal-600 mb-4">
+        <h2 className="text-4xl font-extrabold mb-4">
           Featured Listings
         </h2>
         <p className="text-lg text-gray-700">

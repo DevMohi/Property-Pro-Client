@@ -17,6 +17,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
@@ -27,7 +28,11 @@ import {
   Home,
   Settings,
   User,
+  PlusSquare,
+  Grid,
+  Info,
 } from "lucide-react";
+import { NavUser } from "./NavUser";
 
 export const iconMap = {
   Home,
@@ -36,6 +41,9 @@ export const iconMap = {
   User,
   Settings,
   CreditCard,
+  PlusSquare,
+  Grid,
+  Info,
 };
 
 export type NavItem = {
@@ -60,23 +68,32 @@ export default function DashboardLayout({
   useEffect(() => {
     setMounted(true);
   }, []);
-
   if (!mounted) return null;
+
+  // static quick links
+  const staticLinks: NavItem[] = [
+    { title: "Home", icon: "Home", href: "/" },
+    { title: "All Listings", icon: "Grid", href: "/listings" },
+    { title: "About Us", icon: "Info", href: "/about" },
+  ];
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      <div className="flex h-screen w-full overflow-hidden">
         <Sidebar>
-          <SidebarHeader className="border-b">
-            <div className="flex items-center gap-2 px-8 py-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-600 text-white">
-                <Home className="h-4 w-4" />
+          <Link href="/">
+            <SidebarHeader className="border-b">
+              <div className="flex items-center gap-2 px-8 py-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-600 text-white">
+                  <Home className="h-4 w-4" />
+                </div>
+                <div className="font-semibold">PropertyPro</div>
               </div>
-              <div className="font-semibold">PropertyPro</div>
-            </div>
-          </SidebarHeader>
+            </SidebarHeader>
+          </Link>
 
-          <SidebarContent>
+          <SidebarContent className="overflow-hidden h-full">
+            {/* dynamic navItems */}
             <SidebarGroup>
               <SidebarGroupLabel>Navigation</SidebarGroupLabel>
               <SidebarGroupContent>
@@ -89,9 +106,42 @@ export default function DashboardLayout({
                           asChild
                           isActive={pathname === item.href}
                         >
-                          <Link href={item.href}>
-                            {Icon && <Icon className="h-4 w-4" />}
+                          <Link
+                            href={item.href}
+                            className="flex items-center gap-2"
+                          >
+                            <Icon className="h-4 w-4" />
                             <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            <SidebarSeparator />
+
+            {/* static quick links */}
+            <SidebarGroup>
+              <SidebarGroupLabel>Quick Links</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {staticLinks.map((link) => {
+                    const Icon = iconMap[link.icon];
+                    return (
+                      <SidebarMenuItem key={link.href}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname === link.href}
+                        >
+                          <Link
+                            href={link.href}
+                            className="flex items-center gap-2"
+                          >
+                            <Icon className="h-4 w-4" />
+                            <span>{link.title}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -103,12 +153,12 @@ export default function DashboardLayout({
           </SidebarContent>
 
           <SidebarFooter className="border-t p-4">
-            {/* Future profile menu */}
+            <NavUser />
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset>
-          <div className="flex flex-col flex-1 min-h-screen bg-white">
+        <SidebarInset className="flex-1 p-6 overflow-y-auto">
+          <div className="flex flex-col flex-1 bg-white">
             <header className="flex h-16 items-center gap-4 border-b px-6 bg-background">
               <SidebarTrigger />
               <div className="font-semibold">
@@ -116,7 +166,6 @@ export default function DashboardLayout({
                   ?.title || "Dashboard"}
               </div>
             </header>
-
             <main className="flex-1 p-6 overflow-y-auto">{children}</main>
           </div>
         </SidebarInset>

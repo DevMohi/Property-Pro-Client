@@ -35,7 +35,7 @@ export default function ReusableProfilePage({
   passForm,
   handlePasswordSubmit,
 }: Props) {
-  const formatDate = (iso: string) => new Date(iso).toLocaleDateString();
+  // const formatDate = (iso: string) => new Date(iso).toLocaleDateString(); 
 
   return (
     <div className="flex flex-col gap-6 p-8">

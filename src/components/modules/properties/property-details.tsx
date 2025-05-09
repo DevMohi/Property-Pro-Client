@@ -337,6 +337,18 @@ const PropertyDetailPage = ({ params }: { params: { id: string } }) => {
                       Request Rental
                     </Button>
                   ))}
+
+                {user === null && (
+                  <Button
+                    onClick={() => {
+                      toast.success("Need to login");
+                      router.push("/login");
+                    }}
+                    className="w-full mt-4 bg-teal-600 hover:bg-teal-700 text-white"
+                  >
+                    Request Rental
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </div>

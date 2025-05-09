@@ -48,9 +48,6 @@ export const getSingleListing = async (id: string) => {
       `${process.env.NEXT_PUBLIC_BASE_API}/landlords/listings/${id}`,
       {
         method: "GET",
-        headers: {
-          Authorization: (await cookies()).get("accessToken")!.value,
-        },
         next: {
           tags: ["PROPERTY"],
         },

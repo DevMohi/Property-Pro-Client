@@ -24,11 +24,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getSingleListing, updateListing } from "@/services/PropertyService";
 import { toast } from "sonner";
+import { useUser } from "@/context/UserContext";
 
 const EditPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const id = params.id as string;
   console.log(id);
+  const { user } = useUser();
 
   const [property, setProperty] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,7 +95,11 @@ const EditPage = ({ params }: { params: { id: string } }) => {
       // Handle the response from the update request
       if (res?.success) {
         toast.success(res?.message); // Show success message
-        router.push("/landlord/properties"); // Optionally, redirect to properties page after successful update
+        if (user?.role === "admin") {
+          router.push("/admin/all-listings");
+        } else if (user?.role === "landlord") {
+          router.push("/landlord/properties");
+        }
       } else {
         toast.error(res?.message); // Show error message
       }

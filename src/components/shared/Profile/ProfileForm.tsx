@@ -14,7 +14,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { CardFooter } from "@/components/ui/card";
 
 export const profileFormSchema = z.object({
@@ -63,7 +62,7 @@ export default function ProfileForm({
             />
           ))}
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="bio"
             render={({ field }) => (
@@ -75,7 +74,7 @@ export default function ProfileForm({
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
         </div>
 
         <CardFooter className="flex justify-end px-0">

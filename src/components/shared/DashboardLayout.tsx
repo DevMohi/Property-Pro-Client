@@ -31,6 +31,7 @@ import {
   PlusSquare,
   Grid,
   Info,
+  ShoppingCart,
 } from "lucide-react";
 import { NavUser } from "./NavUser";
 
@@ -44,6 +45,7 @@ export const iconMap = {
   PlusSquare,
   Grid,
   Info,
+  ShoppingCart
 };
 
 export type NavItem = {

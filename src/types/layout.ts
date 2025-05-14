@@ -50,14 +50,14 @@ export const tenantItems: {
 
 export const adminItems: {
   title: string;
-  icon: "Building2" | "ClipboardList" | "User" | "CreditCard" | "Home";
+  icon: "Building2" | "ClipboardList" | "User" | "CreditCard" | "Home" | "ShoppingCart";
   href: string;
 }[] = [
   { title: "Dashboard", icon: "Home", href: "/admin/dashboard" },
   { title: "Users", icon: "User", href: "/admin/users" },
   { title: "Listings", icon: "Building2", href: "/admin/all-listings" },
-  { title: "Requests", icon: "User", href: "/admin/requests" },
-  { title: "Orders", icon: "User", href: "/admin/orders" },
+  { title: "Requests", icon: "ClipboardList", href: "/admin/requests" },
+  { title: "Orders", icon: "ShoppingCart", href: "/admin/orders" },
   {
     title: "Profile",
     icon: "User",

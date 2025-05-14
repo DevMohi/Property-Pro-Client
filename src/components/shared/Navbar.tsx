@@ -27,14 +27,17 @@ import { protectedRoutes } from "@/constants";
 import React from "react";
 
 export default function Navbar() {
-  const { user, setIsLoading } = useUser();
+  const { user, setIsLoading, setUser } = useUser();
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const handleLogout = () => {
     logout();
+    setUser(null);
     setIsLoading(true);
+
+    //jodi kono protected route thake then it will navigate to login. // will do this logic later 
     if (protectedRoutes.some((route) => pathname.match(route))) {
       router.push("/login");
     }

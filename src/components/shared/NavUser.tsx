@@ -17,24 +17,22 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useUser } from "@/context/UserContext";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { logout } from "@/services/AuthService";
-import { protectedRoutes } from "@/constants";
+// import { protectedRoutes } from "@/constants";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { user, setIsLoading } = useUser();
+  const { user, setIsLoading, setUser } = useUser();
 
   const router = useRouter();
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setIsLoading(true);
-
-    if (protectedRoutes.some((route) => pathname.match(route))) {
-      router.push("/");
-    }
+    setUser(null);
+    router.push("/");
   };
 
   return (

@@ -1,3 +1,5 @@
+// components/modules/tenant/AllProducts.tsx
+
 "use client";
 
 import { useMemo, useState } from "react";
@@ -6,13 +8,14 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectItem,
 } from "@/components/ui/select";
+import { Search, Filter, X } from "lucide-react";
 import ListingCard from "./listing-card";
-import TablePagination from "@/components/ui/core/NMTable/TablePagination";
+import TablePaginationStatic from "@/components/ui/core/NMTable/TablePaginationStatic";
 
 interface Listing {
   _id: string;
@@ -24,254 +27,321 @@ interface Listing {
   area: string;
   houseStatus: string;
   imageUrls?: string[];
-  createdAt: string;
   amenities?: string[];
+  createdAt: string;
 }
 
-export default function AllProducts({
-  listings,
-  meta,
-}: {
-  listings: Listing[];
-  meta: any;
-}) {
-  console.log("meta", meta);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [minBedrooms, setMinBedrooms] = useState("");
-  const [maxBedrooms, setMaxBedrooms] = useState("");
-  const [minBathrooms, setMinBathrooms] = useState("");
-  const [maxBathrooms, setMaxBathrooms] = useState("");
-  const [minArea, setMinArea] = useState("");
-  const [maxArea, setMaxArea] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
+export default function AllProducts({ listings }: { listings: Listing[] }) {
+  // ─── Filter & Sort State ────────────────────────────
+  const [keyword, setKeyword] = useState("");
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+  const [bedroomsMin, setBedroomsMin] = useState("");
+  const [bedroomsMax, setBedroomsMax] = useState("");
+  const [bathroomsMin, setBathroomsMin] = useState("");
+  const [bathroomsMax, setBathroomsMax] = useState("");
+  const [areaMin, setAreaMin] = useState("");
+  const [areaMax, setAreaMax] = useState("");
+  const [sortField, setSortField] = useState("createdAt");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+
+  // ─── Pagination & UI State ─────────────────────────
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [activePage, setActivePage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
 
   const filteredListings = useMemo(() => {
-    let results = [...listings];
+    // Make a copy of the original listings array to avoid mutating props
+    let result = [...listings];
 
-    // Filter by search
-    if (searchQuery) {
-      results = results.filter((item) =>
-        item.location.toLowerCase().includes(searchQuery.toLowerCase())
+    const term = keyword.trim().toLowerCase();
+
+    if (term) {
+      result = result.filter((item) => {
+        const title = item.title.toLowerCase();
+        const location = item.location.toLowerCase();
+        return title.includes(term) || location.includes(term);
+      });
+    }
+
+    if (priceMin) {
+      result = result.filter((item) => Number(item.rent) >= Number(priceMin));
+    }
+
+    if (priceMax) {
+      result = result.filter((item) => Number(item.rent) <= Number(priceMax));
+    }
+
+    if (bedroomsMin) {
+      result = result.filter(
+        (item) => Number(item.bedrooms) >= Number(bedroomsMin)
       );
     }
 
-    // Filter by price range
-    if (minPrice) {
-      results = results.filter(
-        (item) => parseFloat(item.rent) >= parseFloat(minPrice)
+    if (bedroomsMax) {
+      result = result.filter(
+        (item) => Number(item.bedrooms) <= Number(bedroomsMax)
       );
     }
 
-    if (maxPrice) {
-      results = results.filter(
-        (item) => parseFloat(item.rent) <= parseFloat(maxPrice)
+    if (bathroomsMin) {
+      result = result.filter(
+        (item) => Number(item.bathrooms) >= Number(bathroomsMin)
       );
     }
 
-    // Filter by bedrooms
-    if (minBedrooms) {
-      results = results.filter(
-        (item) => parseInt(item.bedrooms) >= parseInt(minBedrooms)
+    if (bathroomsMax) {
+      result = result.filter(
+        (item) => Number(item.bathrooms) <= Number(bathroomsMax)
       );
     }
 
-    if (maxBedrooms) {
-      results = results.filter(
-        (item) => parseInt(item.bedrooms) <= parseInt(maxBedrooms)
-      );
+    if (areaMin) {
+      result = result.filter((item) => Number(item.area) >= Number(areaMin));
     }
 
-    // Filter by bathrooms
-    if (minBathrooms) {
-      results = results.filter(
-        (item) => parseInt(item.bathrooms) >= parseInt(minBathrooms)
-      );
+    if (areaMax) {
+      result = result.filter((item) => Number(item.area) <= Number(areaMax));
     }
 
-    if (maxBathrooms) {
-      results = results.filter(
-        (item) => parseInt(item.bathrooms) <= parseInt(maxBathrooms)
-      );
-    }
+    // Sort the filtered results
+    result.sort((a, b) => {
+      if (sortField === "location") {
+        if (sortDirection === "asc") {
+          return a.location.localeCompare(b.location);
+        } else {
+          return b.location.localeCompare(a.location);
+        }
+      }
 
-    // Filter by area (sqft)
-    if (minArea) {
-      results = results.filter(
-        (item) => parseInt(item.area) >= parseInt(minArea)
-      );
-    }
-
-    if (maxArea) {
-      results = results.filter(
-        (item) => parseInt(item.area) <= parseInt(maxArea)
-      );
-    }
-
-    // Sort by createdAt date
-    results.sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
       const dateB = new Date(b.createdAt).getTime();
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+
+      if (sortDirection === "asc") {
+        return dateA - dateB;
+      } else {
+        return dateB - dateA;
+      }
     });
 
-    return results;
+    return result;
   }, [
     listings,
-    searchQuery,
-    minPrice,
-    maxPrice,
-    minBedrooms,
-    maxBedrooms,
-    minBathrooms,
-    maxBathrooms,
-    minArea,
-    maxArea,
-    sortOrder,
+    keyword,
+    priceMin,
+    priceMax,
+    bedroomsMin,
+    bedroomsMax,
+    bathroomsMin,
+    bathroomsMax,
+    areaMin,
+    areaMax,
+    sortField,
+    sortDirection,
   ]);
 
-  return (
-    <div className="flex flex-wrap gap-8 my-10">
-      {/* Sidebar */}
-      <div className="w-full max-w-xs space-y-4 sm:w-1/3 lg:w-1/4 bg-white border rounded-lg  p-4">
-        <h2 className="text-xl font-bold text-gray-700">Search Filters</h2>
+  // ─── Pagination slice ────────────────────────────────
+  const startIndex = (activePage - 1) * itemsPerPage;
+  const pageItems = filteredListings.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+  const totalPages = Math.ceil(filteredListings.length / itemsPerPage);
 
-        <div>
-          <Label htmlFor="search">Search by Location</Label>
+  return (
+    <div className="container mx-auto py-6">
+      {/* Top Controls */}
+      <div className="flex flex-col md:flex-wrap lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+        {/* Search Bar */}
+        <div className="flex grow items-center bg-white rounded shadow px-3 py-2 min-w-0">
+          <Search className="mr-2 text-gray-500 flex-shrink-0" />
           <Input
-            id="search"
-            className="mt-2"
-            placeholder="Enter location"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by title or location…"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            className="border-none focus:ring-0 flex-1 min-w-0"
           />
         </div>
 
-        <div>
-          <Label>Rent Range</Label>
-          <div className="flex gap-2">
-            <Input
-              type="number"
-              className="mt-2"
-              placeholder="Min"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-            />
-            <Input
-              type="number"
-              className="mt-2"
-              placeholder="Max"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-            />
+        <div className="flex flex-wrap gap-4 justify-start">
+          {/* Show per page */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Label>Show:</Label>
+            <Select
+              value={String(itemsPerPage)}
+              onValueChange={(v) => {
+                setItemsPerPage(+v);
+                setActivePage(1);
+              }}
+            >
+              <SelectTrigger className="w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[3, 6, 9].map((n) => (
+                  <SelectItem key={n} value={n.toString()}>
+                    {n}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Sort controls */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Label>Sort:</Label>
+            <Select value={sortField} onValueChange={(v) => setSortField(v)}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Date Added" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="createdAt">Date Added</SelectItem>
+                <SelectItem value="location">Location</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={sortDirection}
+              onValueChange={(v) => setSortDirection(v as any)}
+            >
+              <SelectTrigger className="w-24">
+                <SelectValue placeholder="Desc" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">Desc</SelectItem>
+                <SelectItem value="asc">Asc</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Toogle  */}
+            <Button variant="outline" onClick={() => setShowFilters((f) => !f)}>
+              {showFilters ? <X size={16} /> : <Filter size={16} />}
+            </Button>
           </div>
         </div>
-
-        <div>
-          <Label>Bedrooms</Label>
-          <div className="flex gap-2">
-            <Input
-              type="number"
-              className="mt-2"
-              placeholder="Min"
-              value={minBedrooms}
-              onChange={(e) => setMinBedrooms(e.target.value)}
-            />
-            <Input
-              type="number"
-              className="mt-2"
-              placeholder="Max"
-              value={maxBedrooms}
-              onChange={(e) => setMaxBedrooms(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div>
-          <Label>Bathrooms</Label>
-          <div className="flex gap-2">
-            <Input
-              type="number"
-              className="mt-2"
-              placeholder="Min"
-              value={minBathrooms}
-              onChange={(e) => setMinBathrooms(e.target.value)}
-            />
-            <Input
-              type="number"
-              className="mt-2"
-              placeholder="Max"
-              value={maxBathrooms}
-              onChange={(e) => setMaxBathrooms(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div>
-          <Label>Area (sqft)</Label>
-          <div className="flex gap-2">
-            <Input
-              type="number"
-              className="mt-2"
-              placeholder="Min"
-              value={minArea}
-              onChange={(e) => setMinArea(e.target.value)}
-            />
-            <Input
-              type="number"
-              className="mt-2"
-              placeholder="Max"
-              value={maxArea}
-              onChange={(e) => setMaxArea(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div>
-          <Label>Sort By</Label>
-          <Select value={sortOrder} onValueChange={(val) => setSortOrder(val)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Sort by created" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="asc">Ascending</SelectItem>
-              <SelectItem value="desc">Descending</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() => {
-            setSearchQuery("");
-            setMinPrice("");
-            setMaxPrice("");
-            setMinBedrooms("");
-            setMaxBedrooms("");
-            setMinBathrooms("");
-            setMaxBathrooms("");
-            setMinArea("");
-            setMaxArea("");
-            setSortOrder("asc");
-          }}
-        >
-          Clear All Filters
-        </Button>
       </div>
 
-      {/* Listings */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1 rounded-lg">
-        {filteredListings.map((listing) => (
-          <div className="flex flex-col h-full" key={listing._id}>
-            <ListingCard listing={listing} />
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Sidebar Filters */}
+        <aside
+          className={`bg-white rounded-lg shadow p-6 space-y-6 lg:block ${
+            showFilters ? "block" : "hidden"
+          }`}
+        >
+          {/* Price Range */}
+          <div>
+            <Label className="font-semibold">Rent Range</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                value={priceMin}
+                onChange={(e) => setPriceMin(e.target.value)}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                value={priceMax}
+                onChange={(e) => setPriceMax(e.target.value)}
+              />
+            </div>
           </div>
-        ))}
 
-        <TablePagination
-          totalPage={meta.totalPage}
-        />
+          {/* Bedrooms */}
+          <div>
+            <Label className="font-semibold">Bedrooms</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                value={bedroomsMin}
+                onChange={(e) => setBedroomsMin(e.target.value)}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                value={bedroomsMax}
+                onChange={(e) => setBedroomsMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Bathrooms */}
+          <div>
+            <Label className="font-semibold">Bathrooms</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                value={bathroomsMin}
+                onChange={(e) => setBathroomsMin(e.target.value)}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                value={bathroomsMax}
+                onChange={(e) => setBathroomsMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Area */}
+          <div>
+            <Label className="font-semibold">Area (sqft)</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                type="number"
+                placeholder="Min"
+                value={areaMin}
+                onChange={(e) => setAreaMin(e.target.value)}
+              />
+              <Input
+                type="number"
+                placeholder="Max"
+                value={areaMax}
+                onChange={(e) => setAreaMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Clear Filters */}
+          <Button
+            variant="outline"
+            className="w-full mt-4"
+            onClick={() => {
+              setKeyword("");
+              setPriceMin("");
+              setPriceMax("");
+              setBedroomsMin("");
+              setBedroomsMax("");
+              setBathroomsMin("");
+              setBathroomsMax("");
+              setAreaMin("");
+              setAreaMax("");
+              setSortField("createdAt");
+              setSortDirection("desc");
+              setItemsPerPage(6);
+              setActivePage(1);
+              setShowFilters(false);
+            }}
+          >
+            Clear All Filters
+          </Button>
+        </aside>
+
+        {/* Listings List */}
+        <main className="flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {pageItems.map((item) => (
+              <ListingCard key={item._id} listing={item} />
+            ))}
+          </div>
+
+          <TablePaginationStatic
+            totalPage={totalPages}
+            currentPage={activePage}
+            onPageChange={setActivePage}
+          />
+        </main>
       </div>
     </div>
   );

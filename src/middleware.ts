@@ -3,7 +3,7 @@ import { getCurrentUser } from "./services/AuthService";
 
 type Role = keyof typeof roleBasedPrivateRoutes;
 
-const authRoutes = ["/login", "/register"]; //Jodi login or register hoi taile jete dibe
+const authRoutes = ["/login", "/register"]; // Public routes
 const roleBasedPrivateRoutes = {
   user: [/^\/user/],
   admin: [/^\/admin/],
@@ -12,30 +12,34 @@ const roleBasedPrivateRoutes = {
 };
 
 export const middleware = async (request: NextRequest) => {
-  //   console.log("hello world");
   const { pathname } = request.nextUrl;
   const userInfo = await getCurrentUser();
+
   if (!userInfo) {
-    //jodi login ba register na ki check kortese
+    // Allow access to auth routes without login
     if (authRoutes.includes(pathname)) {
       return NextResponse.next();
     } else {
+      // Redirect to login with redirectPath param
       return NextResponse.redirect(
         new URL(
-          `http://localhost:3000/login?redirectPath=${pathname}`,
-          request.url
+          `/login?redirectPath=${encodeURIComponent(pathname)}`,
+          request.nextUrl.origin
         )
       );
     }
   }
 
-  if (userInfo?.role && roleBasedPrivateRoutes[userInfo?.role as Role]) {
-    const routes = roleBasedPrivateRoutes[userInfo?.role as Role];
+  // If logged in, check role-based route access
+  if (userInfo?.role && roleBasedPrivateRoutes[userInfo.role as Role]) {
+    const routes = roleBasedPrivateRoutes[userInfo.role as Role];
     if (routes.some((route) => pathname.match(route))) {
       return NextResponse.next();
     }
   }
-  return NextResponse.redirect(new URL("/", request.url));
+
+  // Unauthorized access — redirect to home page
+  return NextResponse.redirect(new URL("/", request.nextUrl.origin));
 };
 
 export const config = {

@@ -20,10 +20,11 @@ import { toast } from "sonner";
 import { loginSchema } from "./LoginValidation";
 
 // import { useRouter, useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { useUser } from "@/context/UserContext";
 import { IUser } from "@/types";
+import { protectedRoutes } from "@/constants";
 
 const LoginForm = () => {
   const form = useForm({ resolver: zodResolver(loginSchema) });
@@ -37,6 +38,9 @@ const LoginForm = () => {
   // const searchParams = useSearchParams();
   // const redirect = searchParams.get("redirectPath") || "/";
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirectPath") || "/";
 
   // Submit handler for form submission
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -62,7 +66,10 @@ const LoginForm = () => {
       }
 
       // Redirect to the home page or a different page after successful login
-      router.push("/");
+      if (protectedRoutes.some((route) => pathname.match(route))) {
+        router.push(redirectPath);
+      }
+      // router.push("/"); 
     } catch (err: any) {
       console.error("Login error:", err);
       toast.error("An unexpected error occurred");

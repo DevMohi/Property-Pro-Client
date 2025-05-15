@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import Link from "next/link";
-import PropertyList from "@/components/modules/properties/property-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMyListings } from "@/services/PropertyService";
+import PropertyList from "@/components/modules/properties/property-list";
 
 const DashboardPage = async () => {
   const { data: properties } = await getMyListings();

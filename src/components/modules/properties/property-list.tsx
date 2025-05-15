@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link"; // You forgot to import this!
+import Link from "next/link"; 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Bed, Bath, SquareIcon as SquareFeet } from "lucide-react";
@@ -9,24 +9,24 @@ import { Bed, Bath, SquareIcon as SquareFeet } from "lucide-react";
 import { TProperty } from "@/types/property";
 
 export default function PropertyList({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  limit = 10,
+  limit,
   properties = [],
 }: {
   limit?: number;
   properties?: TProperty[];
 }) {
-  // const { data } = getMyListings();
-  // console.log(data);
-  // const properties = useMemo(() => (data ? data.data : []), [data]);
-  // console.log(properties);
-  //   const displayProperties = properties.slice(0, limit);
 
-  console.log("inside list", properties);
+  // Sort properties by createdAt in descending order (latest first)
+  const sortedProperties = properties.sort((a, b) => 
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  // If limit is provided, slice the properties to show only the top 'limit' items
+  const propertiesToDisplay = limit ? sortedProperties.slice(0, limit) : sortedProperties;
 
   return (
     <div className="space-y-4">
-      {properties.map((property) => (
+      {propertiesToDisplay.map((property) => (
         <Card key={property._id} className="overflow-hidden">
           <CardContent className="p-0">
             <Link

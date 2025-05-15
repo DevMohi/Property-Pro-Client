@@ -8,4 +8,5 @@ export interface TProperty {
   bathrooms: string;
   area: string;
   rent: string;
+  createdAt: string;
 }

@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ListingCard from "./listing-card";
+import TablePagination from "@/components/ui/core/NMTable/TablePagination";
 
 interface Listing {
   _id: string;
@@ -27,7 +28,14 @@ interface Listing {
   amenities?: string[];
 }
 
-export default function AllProducts({ listings }: { listings: Listing[] }) {
+export default function AllProducts({
+  listings,
+  meta,
+}: {
+  listings: Listing[];
+  meta: any;
+}) {
+  console.log("meta", meta);
   const [searchQuery, setSearchQuery] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -260,6 +268,10 @@ export default function AllProducts({ listings }: { listings: Listing[] }) {
             <ListingCard listing={listing} />
           </div>
         ))}
+
+        <TablePagination
+          totalPage={meta.totalPage}
+        />
       </div>
     </div>
   );

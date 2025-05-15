@@ -22,15 +22,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { logout } from "@/services/AuthService";
 import { useUser } from "@/context/UserContext";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { protectedRoutes } from "@/constants";
 import React from "react";
 
 export default function Navbar() {
   const { user, setIsLoading, setUser } = useUser();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirectPath") || "/";
+
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
@@ -38,10 +37,8 @@ export default function Navbar() {
     await logout();
     setUser(null);
     setIsLoading(true);
-
-    //jodi kono protected route thake then it will navigate to login. // will do this logic later
     if (protectedRoutes.some((route) => pathname.match(route))) {
-      router.push(redirectPath);
+      router.push('/');
     }
   };
 

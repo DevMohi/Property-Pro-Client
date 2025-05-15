@@ -1,4 +1,6 @@
-"use client";
+"use client"; // This ensures the component is treated as client-side only
+
+import React, { Suspense } from "react";
 import Logo from "@/app/assets/svgs/Logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,14 +14,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import React from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { loginUser } from "@/services/AuthService";
-
 import { toast } from "sonner";
 import { loginSchema } from "./LoginValidation";
-
-// import { useRouter, useSearchParams } from "next/navigation";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { useUser } from "@/context/UserContext";
@@ -33,10 +31,7 @@ const LoginForm = () => {
   } = form;
 
   // User context and routing
-  const { setUser, user } = useUser();
-  console.log(user);
-  // const searchParams = useSearchParams();
-  // const redirect = searchParams.get("redirectPath") || "/";
+  const { setUser } = useUser();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -53,7 +48,6 @@ const LoginForm = () => {
 
       // Handle success case
       const token = res?.data?.accessToken;
-      // console.log("Inside login form", token);
       if (token) {
         try {
           const decodedUser = jwtDecode<IUser>(token);
@@ -65,11 +59,10 @@ const LoginForm = () => {
         }
       }
 
-      // Redirect to the home page or a different page after successful login
+      // Redirect after login
       if (protectedRoutes.some((route) => pathname.match(route))) {
         router.push(redirectPath);
       }
-      // router.push("/"); 
     } catch (err: any) {
       console.error("Login error:", err);
       toast.error("An unexpected error occurred");
@@ -113,7 +106,6 @@ const LoginForm = () => {
               </FormItem>
             )}
           />
-
           <Button type="submit" className="w-full">
             {isSubmitting ? "Logging..." : "Login"}
           </Button>
@@ -129,4 +121,10 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading Login Page...</div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}

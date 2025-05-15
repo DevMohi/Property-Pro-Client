@@ -45,7 +45,7 @@ export const iconMap = {
   PlusSquare,
   Grid,
   Info,
-  ShoppingCart
+  ShoppingCart,
 };
 
 export type NavItem = {
@@ -159,7 +159,7 @@ export default function DashboardLayout({
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset className="flex-1 p-6 overflow-y-auto">
+        <SidebarInset className="flex-1  overflow-y-auto">
           <div className="flex flex-col flex-1 bg-white">
             <header className="flex h-16 items-center gap-4 border-b px-6 bg-background">
               <SidebarTrigger />

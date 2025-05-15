@@ -37,7 +37,7 @@ export default function Navbar() {
     setUser(null);
     setIsLoading(true);
 
-    //jodi kono protected route thake then it will navigate to login. // will do this logic later 
+    //jodi kono protected route thake then it will navigate to login. // will do this logic later
     if (protectedRoutes.some((route) => pathname.match(route))) {
       router.push("/login");
     }
@@ -115,22 +115,26 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop Nav for Cart, Heart, etc. */}
+
         <nav className="hidden lg:flex gap-2 items-center">
-          <Button variant="outline" className="rounded-full p-0 size-10">
-            <Heart />
-          </Button>
-          <Link href="/cart">
-            <Button variant="outline" className="rounded-full p-0 size-10">
-              <ShoppingBag />
-            </Button>
-          </Link>
+          {user?.role === "tenant" && (
+            <div>
+              <Button variant="outline" className="rounded-full p-0 size-10">
+                <ShoppingBag />
+              </Button>
+              <Link href="/tenant/requests">
+                <Button
+                  variant="outline"
+                  className="rounded-full p-0 size-10 ml-2 cursor-pointer"
+                >
+                  <Heart />
+                </Button>
+              </Link>
+            </div>
+          )}
 
           {user?.email ? (
             <>
-              <Link href="/create-shop">
-                <Button className="rounded-full">Create Shop</Button>
-              </Link>
-
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>
@@ -141,14 +145,15 @@ export default function Navbar() {
                 <DropdownMenuContent>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
                   <DropdownMenuItem>
                     <Link href={`/${user?.role}/dashboard`}>Dashboard</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>My Shop</DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href={`/${user?.role}/profile`}>Profile</Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    className="bg-red-500 cursor-pointer"
+                    className="cursor-pointer"
                     onClick={handleLogout}
                   >
                     <LogOut />

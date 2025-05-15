@@ -1,10 +1,10 @@
-import NMContainer from "@/components/ui/core/NMContainer";
+
 
 export default function PrivacyPolicyPage() {
   return (
-    <NMContainer>
-      <section className=" p-6 text-gray-800 mb-16">
-        <h1 className="text-4xl font-bold mb-6 text-center">
+    <div>
+      <section className=" text-gray-800 mb-16 container mx-auto">
+        <h1 className="text-4xl font-bold my-6 ">
           Privacy <span className="text-teal-500">Policy</span>
         </h1>
 
@@ -106,6 +106,6 @@ export default function PrivacyPolicyPage() {
           </div>
         </div>
       </section>
-    </NMContainer>
+    </div>
   );
 }

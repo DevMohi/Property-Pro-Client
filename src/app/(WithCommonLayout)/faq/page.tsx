@@ -36,7 +36,7 @@ export default function FaqPage() {
     setOpenIndex(openIndex === index ? null : index);
 
   return (
-    <section className="max-w-7xl mx-auto p-6 text-gray-800">
+    <section className="container mx-auto text-gray-800">
       <h1 className="text-3xl font-bold mb-6 text-center">
         Frequently Asked{" "}
         <span className="text-teal-500 text-4xl">Questions</span>

@@ -1,4 +1,6 @@
 "use client";
+
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -22,26 +24,30 @@ const slides = [
 ];
 
 export default function HomeSlider() {
+  const pathname = usePathname();
   const [current, setCurrent] = useState(0);
 
+  // Always register the effect, but only start the slider timer on the home page
   useEffect(() => {
+    if (pathname !== "/") return;
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+      setCurrent((p) => (p + 1) % slides.length);
     }, 10000);
     return () => clearInterval(timer);
-  }, []);
+  }, [pathname]);
 
-  const prevSlide = () =>
-    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
+  // If not on "/", render nothing
+  if (pathname !== "/") {
+    return null;
+  }
 
   return (
     <div className="relative h-[65vh] overflow-hidden">
-      {slides.map((slide, index) => (
+      {slides.map((slide, i) => (
         <div
-          key={index}
+          key={i}
           className={`absolute w-full h-full transition-opacity duration-1000 ease-in-out ${
-            index === current ? "opacity-100 z-10" : "opacity-0 z-0"
+            i === current ? "opacity-100 z-10" : "opacity-0 z-0"
           }`}
         >
           <Image
@@ -50,7 +56,6 @@ export default function HomeSlider() {
             src={slide.img}
             alt={slide.title}
             className="w-full h-full brightness-40 object-cover"
-
           />
           <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white px-4">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -61,16 +66,17 @@ export default function HomeSlider() {
         </div>
       ))}
 
-      {/* Navigation buttons */}
       <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-70 transition z-20 cursor-pointer"
+        onClick={() =>
+          setCurrent((p) => (p - 1 + slides.length) % slides.length)
+        }
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-70 transition z-20"
       >
         <ChevronLeft />
       </button>
       <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-70 transition z-20 cursor-pointer"
+        onClick={() => setCurrent((p) => (p + 1) % slides.length)}
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-70 transition z-20"
       >
         <ChevronRight />
       </button>

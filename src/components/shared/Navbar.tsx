@@ -292,7 +292,7 @@ export default function Navbar() {
             </>
           ) : (
             <Link href="/login">
-              <Button className="w-full rounded-full" variant="outline">
+              <Button className="w-full rounded-full cursor-pointer" variant="outline">
                 Login
               </Button>
             </Link>

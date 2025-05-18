@@ -38,7 +38,7 @@ export default function ReusableProfilePage({
   // const formatDate = (iso: string) => new Date(iso).toLocaleDateString(); 
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex flex-col gap-6 px-4">
       <div>
         <h1 className="text-3xl font-bold">My Profile</h1>
         <p className="text-muted-foreground">Manage your personal info</p>

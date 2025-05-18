@@ -3,7 +3,7 @@
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
-export const getAllListings = async (page?:string,limit?:string) => {
+export const getAllListings = async (page?: string, limit?: string) => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API}/landlords/listings?page=${page}&limit=${limit}`,
@@ -21,10 +21,10 @@ export const getAllListings = async (page?:string,limit?:string) => {
   }
 };
 
-export const getMyListings = async () => {
+export const getMyListings = async (page?: string, limit?: string) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/landlords/my-postings`,
+      `${process.env.NEXT_PUBLIC_BASE_API}/landlords/my-postings?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {

@@ -72,7 +72,7 @@ const RequestList = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-4">
       {requests.map((request) => (
         <div
           key={request._id}

@@ -1,141 +1,145 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
 import { getMyRentalRequests, paymentInitiate } from "@/services/TenantService";
+import TablePagination from "@/components/ui/core/NMTable/TablePaginationDynamic";
+import { useSearchParams } from "next/navigation";
 
-// Import the server-side function to get rental requests
+type Request = {
+  _id: string;
+  rentalHouseId: {
+    _id: string;
+    title: string;
+    location: string;
+    description: string;
+    rent: string;
+    imageUrls: string[];
+  };
+  message: string;
+  status: string;
+  phone: string;
+  paymentStatus: "Paid" | "Pending" | "Failed";
+  createdAt: string;
+};
 
-const MyRequestsPage = () => {
-  const [requests, setRequests] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+export default function MyRequestsPage() {
+  const { setIsLoading } = useUser();
+  const params = useSearchParams();
+  const pageParam = params.get("page") ?? "1";
+  const limitParam = params.get("limit") ?? "2";
 
-  // Fetch rental requests on component mount
+  const [requests, setRequests] = useState<Request[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalPage, setTotalPage] = useState(1);
+
   useEffect(() => {
-    const fetchRequests = async () => {
+    (async () => {
       try {
-        const data = await getMyRentalRequests();
-        setRequests(data?.data || []);
-      } catch (error) {
-        console.error("Error fetching rental requests:", error);
-        // Handle any error from the server
+        setIsLoading(true);
+        const res = await getMyRentalRequests(pageParam, limitParam);
+        setRequests(res.data || []);
+        setTotalPage(res.meta.totalPage);
+      } catch (err) {
+        console.error("Error fetching rental requests:", err);
       } finally {
-        setIsLoading(false); // Set loading to false when data is fetched
+        setLoading(false);
+        setIsLoading(false);
       }
-    };
+    })();
+  }, [pageParam, limitParam, setIsLoading]);
 
-    fetchRequests();
-  }, []);
-
-  // Handle payment button click
   const handleSubmit = async (rentalRequestId: string) => {
-    console.log("hello");
-    console.log(rentalRequestId);
     try {
-      const response = await paymentInitiate({
-        rentalRequestId: rentalRequestId,
-      });
-      console.log(response);
-      if (response?.data) {
-        window.open(response?.data, "_blank");
-      }
+      const response = await paymentInitiate({ rentalRequestId });
+      if (response?.data) window.open(response.data, "_blank");
     } catch (error) {
-      alert(error);
       console.error("Payment initiation failed", error);
       alert("Failed to initiate payment.");
     }
   };
 
-  if (isLoading) return <p>Loading...</p>;
+  if (loading) {
+    return <p className="text-center py-12">Loading requests…</p>;
+  }
+  if (!requests.length) {
+    return <p className="text-center py-12">No requests available</p>;
+  }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 flex flex-col gap-4 md:gap-6 lg:gap-8">
-      {requests?.map((request: any) => {
-        console.log('Request', requests)
-        const product = request?.rentalHouseId;
-
+    <div className="px-4 md:p-6 lg:p-8">
+      {requests.map((r) => {
+        const p = r.rentalHouseId;
         return (
           <div
-            key={request._id}
-            className="bg-white rounded-xl shadow-md flex flex-col md:flex-row overflow-hidden w-full"
+            key={r._id}
+            className="bg-white rounded-xl shadow-md flex flex-col md:flex-row overflow-hidden mb-6"
           >
-            {/* Image Section - Full width on mobile, fixed width on larger screens */}
             <div className="w-full md:w-60 h-48 md:h-auto">
               <Image
-                src={(product?.imageUrls?.[0] || "/placeholder.png").trim()}
-                alt="Property"
+                src={(p.imageUrls?.[0] || "/placeholder.png").trim()}
+                alt={p.title}
                 width={240}
                 height={180}
-                className="object-cover h-full w-full"
-                priority={false}
+                className="object-cover w-full h-full"
               />
             </div>
-
-            {/* Content Section */}
             <div className="flex flex-col justify-between p-4 flex-1">
               <div className="space-y-2">
-                <h2 className="text-lg md:text-xl font-bold">
-                  {product?.title}
-                </h2>
-                <p className="text-xs md:text-sm text-gray-600">
-                  {product?.location}
-                </p>
+                <h2 className="text-lg md:text-xl font-bold">{p.title}</h2>
+                <p className="text-xs md:text-sm text-gray-600">{p.location}</p>
                 <p className="text-xs md:text-sm text-gray-500 line-clamp-2">
-                  {product?.description}
+                  {p.description}
                 </p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <p>
-                    <strong>Rent:</strong> ${product?.rent}
+                    <strong>Rent:</strong> ${p.rent}
                   </p>
                   <p className="col-span-2">
-                    <strong>Message:</strong> {request.message}
+                    <strong>Message:</strong> {r.message}
                   </p>
                   <p className="col-span-2">
-                    <strong>Status:</strong> {request.status}
+                    <strong>Status:</strong> {r.status}
                   </p>
                   <p className="col-span-2">
-                    <strong>Phone:</strong> {request.phone || "N/A"}
+                    <strong>Phone:</strong> {r.phone || "N/A"}
                   </p>
                 </div>
               </div>
-
-              {/* Payment Status and Button Section */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-3">
-                {request?.paymentStatus && (
+                {r.paymentStatus && (
                   <div
                     className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
-                      request.paymentStatus === "Paid"
+                      r.paymentStatus === "Paid"
                         ? "bg-green-100 text-green-800"
-                        : request.paymentStatus === "Pending"
+                        : r.paymentStatus === "Pending"
                         ? "bg-blue-100 text-blue-800"
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    Payment: {request.paymentStatus}
+                    Payment: {r.paymentStatus}
                   </div>
                 )}
-
-                <div className="">
-                  <Button
-                    className="w-full sm:w-auto"
-                    disabled={
-                      request?.status !== "Approved" ||
-                      request.paymentStatus === "Paid"
-                    }
-                    onClick={() => handleSubmit(request._id)}
-                    size="sm"
-                  >
-                    {request.paymentStatus === 'Paid' ? "Paid" : "Pay Now"}
-                  </Button>
-                </div>
+                <Button
+                  size="sm"
+                  disabled={
+                    r.status !== "Approved" || r.paymentStatus === "Paid"
+                  }
+                  onClick={() => handleSubmit(r._id)}
+                >
+                  {r.paymentStatus === "Paid" ? "Paid" : "Pay Now"}
+                </Button>
               </div>
             </div>
           </div>
         );
       })}
+
+      <div className="mt-4 flex justify-end text-sm text-gray-500">
+        <TablePagination totalPage={totalPage} />
+      </div>
     </div>
   );
-};
-
-export default MyRequestsPage;
+}

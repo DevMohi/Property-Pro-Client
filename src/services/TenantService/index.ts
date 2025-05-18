@@ -27,10 +27,10 @@ export const createRequest = async (data: FieldValues) => {
   }
 };
 
-export const getMyRentalRequests = async () => {
+export const getMyRentalRequests = async (page?: string, limit?: string) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/rental-requests/my-requests`,
+      `${process.env.NEXT_PUBLIC_BASE_API}/rental-requests/my-requests?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {

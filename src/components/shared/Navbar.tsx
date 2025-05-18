@@ -1,6 +1,8 @@
 "use client";
 
-import { Button } from "../ui/button";
+import React from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Heart,
   LogOut,
@@ -9,8 +11,7 @@ import {
   X,
   Home,
   ChevronDown,
-} from "lucide-react"; // Import ChevronDown
-import Link from "next/link";
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,12 +25,10 @@ import { logout } from "@/services/AuthService";
 import { useUser } from "@/context/UserContext";
 import { usePathname, useRouter } from "next/navigation";
 import { protectedRoutes } from "@/constants";
-import React from "react";
 
 export default function Navbar() {
   const { user, setIsLoading, setUser } = useUser();
   const pathname = usePathname();
-
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
@@ -38,12 +37,12 @@ export default function Navbar() {
     setUser(null);
     setIsLoading(true);
     if (protectedRoutes.some((route) => pathname.match(route))) {
-      router.push('/');
+      router.push("/");
     }
   };
 
   return (
-    <header className="border-b bg-background w-full sticky top-0 z-50">
+    <header className="border-b bg-background w-full sticky top-0 z-50 px-2 md:px-0">
       <div className="container mx-auto flex justify-between items-center h-16">
         {/* Logo */}
         <Link href="/" className="flex items-center text-2xl font-black">
@@ -55,7 +54,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Middle Navigation Links */}
+        {/* Desktop Middle Nav */}
         <nav className="hidden lg:flex gap-6 items-center">
           <Link
             href="/"
@@ -87,13 +86,11 @@ export default function Navbar() {
           >
             About Us
           </Link>
-
-          {/* Explore Dropdown with Arrow */}
           <DropdownMenu>
             <DropdownMenuTrigger>
               <span
                 className={`font-semibold ${
-                  pathname.includes("/explore")
+                  pathname.startsWith("/explore")
                     ? "text-teal-600"
                     : "text-gray-800 hover:text-teal-600"
                 }`}
@@ -113,69 +110,67 @@ export default function Navbar() {
           </DropdownMenu>
         </nav>
 
-        {/* Desktop Nav for Cart, Heart, etc. */}
-
+        {/* Desktop Right Nav */}
         <nav className="hidden lg:flex gap-2 items-center">
           {user?.role === "tenant" && (
-            <div>
-              <Button variant="outline" className="rounded-full p-0 size-10">
+            <>
+              <Button variant="outline" className="rounded-full p-0">
                 <ShoppingBag />
               </Button>
               <Link href="/tenant/requests">
-                <Button
-                  variant="outline"
-                  className="rounded-full p-0 size-10 ml-2 cursor-pointer"
-                >
+                <Button variant="outline" className="rounded-full p-0 ml-2">
                   <Heart />
                 </Button>
               </Link>
-            </div>
+            </>
           )}
 
           {user?.email ? (
-            <>
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>User</AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link
-                     href={`/${user?.role}/dashboard`}>Dashboard
-                     </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href={`/${user?.role}/profile`}>Profile</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={handleLogout}
-                  >
-                    <LogOut />
-                    <span>Log Out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>User</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Link href={`/${user.role}/dashboard`}>Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href={`/${user.role}/profile`}>Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="cursor-pointer"
+                >
+                  <LogOut className="mr-2" /> Log Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <Link href="/login">
-              <Button className="rounded-full" variant="outline">
-                Login
-              </Button>
-            </Link>
+            <>
+              <Link href="/register">
+                <Button variant="outline" className="rounded-full">
+                  Register
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button variant="outline" className="rounded-full ml-2">
+                  Login
+                </Button>
+              </Link>
+            </>
           )}
         </nav>
 
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden p-2"
+          className="lg:hidden"
         >
           {isMobileMenuOpen ? <X /> : <Menu />}
         </button>
@@ -187,115 +182,61 @@ export default function Navbar() {
           isMobileMenuOpen ? "block" : "hidden"
         } bg-white p-5 shadow-lg`}
       >
-        <div className="flex flex-col gap-4">
-          {/* Middle Nav Links for Mobile */}
-          <Link
-            href="/"
-            className={`text-teal-600 font-semibold ${
-              pathname === "/"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            Home
-          </Link>
-          <Link
-            href="/tenants"
-            className={`text-teal-600 font-semibold ${
-              pathname === "/tenants"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            Tenants
-          </Link>
-          <Link
-            href="/about"
-            className={`text-teal-600 font-semibold ${
-              pathname === "/about"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            About Us
-          </Link>
-          <Link
-            href="/contact"
-            className={`text-teal-600 font-semibold ${
-              pathname === "/contact"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            Contact Us
-          </Link>
-
-          {/* Cart and User related */}
-          <Link href="/cart">
-            <Button variant="outline" className="rounded-full w-full">
-              <ShoppingBag /> Cart
-            </Button>
-          </Link>
-
-          {/* Additional links for mobile */}
-          <Link
-            href="/faq"
-            className={`text-teal-600 font-semibold ${
-              pathname === "/faq"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            FAQ
-          </Link>
-          <Link
-            href="/privacy-policy"
-            className={`text-teal-600 font-semibold ${
-              pathname === "/privacy-policy"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            Privacy & Policy
-          </Link>
+        <div className="flex flex-col items-center gap-4">
+          {[
+            { href: "/", label: "Home" },
+            { href: "/listings", label: "Listings" },
+            { href: "/about", label: "About Us" },
+            { href: "/contact", label: "Contact Us" },
+            { href: "/faq", label: "FAQ" },
+            { href: "/privacy-policy", label: "Privacy & Policy" },
+          ].map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`w-full text-center px-2 py-1 rounded ${
+                pathname === href
+                  ? "text-teal-600 underline"
+                  : "text-gray-800 hover:text-teal-600 hover:underline"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
 
           {user?.email ? (
-            <>
-              <Link href="/create-shop">
-                <Button className="w-full rounded-full">Create Shop</Button>
+            <div className="w-full">
+              <Link
+                href={`/${user.role}/dashboard`}
+                className={`block text-center w-full px-2 py-1 rounded ${
+                  pathname === `/${user.role}/dashboard`
+                    ? "text-teal-600 underline"
+                    : "text-gray-800 hover:text-teal-600 hover:underline"
+                }`}
+              >
+                Dashboard
               </Link>
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>User</AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href={`/${user?.role}/dashboard`}>Dashboard</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>My Shop</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="bg-red-500 cursor-pointer"
-                    onClick={handleLogout}
-                  >
-                    <LogOut />
-                    <span>Log Out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
-          ) : (
-            <Link href="/login">
-              <Button className="w-full rounded-full cursor-pointer" variant="outline">
-                Login
+              <Button
+                variant="outline"
+                className="w-full mt-2"
+                onClick={handleLogout}
+              >
+                Log Out
               </Button>
-            </Link>
+            </div>
+          ) : (
+            <div className="w-full space-y-2">
+              <Link href="/register" className="block">
+                <Button variant="outline" className="w-full">
+                  Register
+                </Button>
+              </Link>
+              <Link href="/login" className="block">
+                <Button variant="outline" className="w-full">
+                  Login
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
       </div>

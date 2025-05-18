@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -24,7 +24,7 @@ const CREDENTIALS: Record<
   admin: { email: "admin@gmail.com", password: "12345678" },
 };
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const {
     register,
@@ -32,14 +32,12 @@ export default function LoginPage() {
     setValue,
     formState: { isSubmitting },
   } = useForm<LoginData>();
-
   const [role, setRole] = useState<"tenant" | "landlord" | "admin">("tenant");
   const { setUser } = useUser();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get("redirectPath") || "/";
 
-  // whenever the role changes, auto-fill form fields
   useEffect(() => {
     const creds = CREDENTIALS[role];
     setValue("email", creds.email);
@@ -49,13 +47,11 @@ export default function LoginPage() {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       const res = await loginUser(data);
-      if (res.success) {
-        toast.success(res?.message);
-      }
-      if (!res?.success) {
-        toast.error(res?.message || "Login failed");
+      if (!res.success) {
+        toast.error(res.message || "Login failed");
         return;
       }
+      toast.success(res.message);
       const token = res.data.accessToken;
       if (token) {
         try {
@@ -76,10 +72,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left pane: hidden on small screens */}
+      {/* Left pane */}
       <div className="hidden md:block md:w-1/2 relative">
         <Image
-          src="https://images.unsplash.com/photo-1582647509711-c8aa8a8bda71?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          src="https://images.unsplash.com/photo-1582647509711-c8aa8a8bda71?q=80&w=1935&auto=format&fit=crop"
           alt="House"
           fill
           className="object-cover"
@@ -88,12 +84,12 @@ export default function LoginPage() {
           <h2 className="text-white text-4xl font-bold mb-2">Property Pro</h2>
           <p className="text-white text-center max-w-xs">
             Easily find your next home or list your property for rent. Log in or
-            sign up to get started with smart and simple home rentals.
+            sign up to get started.
           </p>
         </div>
       </div>
 
-      {/* Right pane: form */}
+      {/* Right pane */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6">
           <Link
@@ -106,12 +102,12 @@ export default function LoginPage() {
 
           <div className="text-center">
             <h1 className="text-2xl font-bold">
-              Welcome Back<span>👋</span>
+              Welcome Back <span>👋</span>
             </h1>
             <p className="text-gray-600 mt-1">Enter Login Details</p>
           </div>
 
-          {/* Role-picker */}
+          {/* Role buttons */}
           <div className="flex justify-center gap-2">
             {(["tenant", "landlord", "admin"] as const).map((r) => (
               <button
@@ -123,12 +119,11 @@ export default function LoginPage() {
                     : "border border-gray-300 text-gray-700 hover:bg-gray-50"
                 }`}
               >
-                {r[0].toUpperCase() + r.slice(1)} Credentials
+                {r[0].toUpperCase() + r.slice(1)}
               </button>
             ))}
           </div>
 
-          {/* Actual form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -170,5 +165,19 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPageWrapper() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          Loading…
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

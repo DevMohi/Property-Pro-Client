@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { User, Mail, Phone, MapPin, Lock } from "lucide-react";
+import { User, Mail, Phone, MapPin, Lock, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { registerUser } from "@/services/AuthService";
 import { registrationSchema } from "./RegisterValidation";
+import Image from "next/image";
 
 type TRegisterForm = z.infer<typeof registrationSchema>;
 
@@ -54,10 +55,18 @@ function RegisterForm() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-teal-50 to-white flex items-center justify-center mt-2">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-8 space-y-4">
+    <div className="bg-gradient-to-br from-teal-50 to-white flex items-center justify-center ">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-10 space-y-2">
+        <div></div>
         <div className="text-center">
-          <h1 className="text-3xl font-extrabold">Create Account</h1>
+          <Link
+            href="/"
+            className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4"
+          >
+            <ChevronLeft size={20} />
+            <span className="ml-1">Back Home</span>
+          </Link>
+          <h1 className="text-2xl font-extrabold">Create Account</h1>
           <p className="text-gray-500 mt-1">Join us and start your journey!</p>
         </div>
 
@@ -72,7 +81,11 @@ function RegisterForm() {
                   <FormControl>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <Input {...field} className="pl-10" placeholder="Your name" />
+                      <Input
+                        {...field}
+                        className="pl-10"
+                        placeholder="Your name"
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -89,7 +102,11 @@ function RegisterForm() {
                   <FormControl>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <Input {...field} className="pl-10" placeholder="you@example.com" />
+                      <Input
+                        {...field}
+                        className="pl-10"
+                        placeholder="you@example.com"
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -106,7 +123,11 @@ function RegisterForm() {
                   <FormControl>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <Input {...field} className="pl-10" placeholder="01234 567890" />
+                      <Input
+                        {...field}
+                        className="pl-10"
+                        placeholder="01234 567890"
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -123,7 +144,11 @@ function RegisterForm() {
                   <FormControl>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <Input {...field} className="pl-10" placeholder="123 Main St" />
+                      <Input
+                        {...field}
+                        className="pl-10"
+                        placeholder="123 Main St"
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -140,7 +165,11 @@ function RegisterForm() {
                   <FormControl>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <Input {...field} className="pl-10" placeholder="Your city" />
+                      <Input
+                        {...field}
+                        className="pl-10"
+                        placeholder="Your city"
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -219,7 +248,7 @@ function RegisterForm() {
 
             <Button
               type="submit"
-              className="w-full py-2"
+              className="w-full py-2  bg-[#00A99D] text-white  rounded hover:bg-[#008F85]"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Registering…" : "Register"}
@@ -229,7 +258,10 @@ function RegisterForm() {
 
         <p className="text-center text-sm text-gray-500">
           Already have an account?{" "}
-          <Link href="/login" className="text-teal-600 font-medium hover:underline">
+          <Link
+            href="/login"
+            className="text-teal-600 font-medium hover:underline"
+          >
             Log in
           </Link>
         </p>
@@ -241,9 +273,36 @@ function RegisterForm() {
 export default function RegisterPage() {
   return (
     <Suspense
-      fallback={<div className="min-h-screen flex items-center justify-center">Loading…</div>}
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          Loading…
+        </div>
+      }
     >
-      <RegisterForm />
+      <div className="min-h-screen flex">
+        {/* Left image pane */}
+        <div className="hidden md:block md:w-1/2 relative">
+          <Image
+            src="https://images.unsplash.com/photo-1582647509711-c8aa8a8bda71?q=80&w=1935&auto=format&fit=crop"
+            alt="House"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-4">
+            <h2 className="text-white text-4xl font-bold mb-2">Property Pro</h2>
+            <p className="text-white text-center max-w-xs">
+              Easily find your next home or list your property for rent. Sign up
+              to get started!
+            </p>
+          </div>
+        </div>
+        {/* Right form pane */}
+        <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-teal-50 to-white p-6">
+          <div className="w-full max-w-md ">
+            <RegisterForm />
+          </div>
+        </div>
+      </div>
     </Suspense>
   );
 }

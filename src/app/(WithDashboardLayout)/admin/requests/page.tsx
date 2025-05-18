@@ -6,16 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import Link from "next/link";
 import { getAllRentalRequests } from "@/services/TenantService";
+import TablePagination from "@/components/ui/core/NMTable/TablePaginationDynamic";
+import { useSearchParams } from "next/navigation";
 
 type Request = {
   _id: string;
-  rentalHouseId: {
-    _id: string;
-    title: string;
-  };
-  tenantId: {
-    email: string;
-  };
+  rentalHouseId: { _id: string; title: string };
+  tenantId: { email: string };
   moveInDate: string;
   rentalDuration: string;
   message: string;
@@ -26,27 +23,38 @@ type Request = {
 };
 
 export default function AdminRequestsPage() {
+  const { setIsLoading } = useUser();
+  const params = useSearchParams();
+  const pageParam = params.get("page") ?? "1";
+  const limitParam = params.get("limit") ?? "5";
+
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
-  const { setIsLoading } = useUser();
+  const [totalPage, setTotalPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
-  // filter state
-  const [houseTitleFilter, setHouseTitleFilter] = useState("");
+  // Filter states
+  const [houseFilter, setHouseFilter] = useState("");
   const [emailFilter, setEmailFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+  const [paymentFilter, setPaymentFilter] = useState("");
 
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         setIsLoading(true);
-        const res = await getAllRentalRequests();
-        const data: Request[] = res.data ?? res;
-        data.sort(
-          (a, b) =>
+
+        const res = await getAllRentalRequests(pageParam, limitParam);
+        // sort newest first
+        const sorted = res.data.sort(
+          (a: Request, b: Request) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
-        setRequests(data);
+
+        setRequests(sorted);
+        setTotalPage(res.meta.totalPage);
+        setTotalCount(res.meta.total);
       } catch (err) {
         console.error("Failed to load requests", err);
       } finally {
@@ -54,19 +62,19 @@ export default function AdminRequestsPage() {
         setIsLoading(false);
       }
     })();
-  }, [setIsLoading]);
+  }, [pageParam, limitParam, setIsLoading]);
 
   if (loading) {
     return <p className="p-6 text-center">Loading requests…</p>;
   }
+  if (!requests.length) {
+    return <p className="p-6 text-center">No requests available</p>;
+  }
 
-  // apply filters
   const filtered = requests.filter((r) => {
     if (
-      houseTitleFilter &&
-      !r.rentalHouseId?.title
-        .toLowerCase()
-        .includes(houseTitleFilter.toLowerCase())
+      houseFilter &&
+      !r.rentalHouseId.title.toLowerCase().includes(houseFilter.toLowerCase())
     )
       return false;
     if (
@@ -75,35 +83,34 @@ export default function AdminRequestsPage() {
     )
       return false;
     if (statusFilter && r.status !== statusFilter) return false;
-    if (paymentStatusFilter && r.paymentStatus !== paymentStatusFilter)
-      return false;
+    if (paymentFilter && r.paymentStatus !== paymentFilter) return false;
     return true;
   });
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Rental Requests</h1>
+      <h1 className="text-3xl font-bold mb-6">Rental Requests</h1>
 
-      {/* ============ FILTER BAR ============ */}
+      {/* FILTER BAR */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <input
           type="text"
           placeholder="House Title"
-          value={houseTitleFilter}
-          onChange={(e) => setHouseTitleFilter(e.target.value)}
           className="border px-3 py-2 rounded"
+          value={houseFilter}
+          onChange={(e) => setHouseFilter(e.target.value)}
         />
         <input
           type="text"
           placeholder="Tenant Email"
+          className="border px-3 py-2 rounded"
           value={emailFilter}
           onChange={(e) => setEmailFilter(e.target.value)}
-          className="border px-3 py-2 rounded"
         />
         <select
+          className="border px-3 py-2 rounded"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border px-3 py-2 rounded"
         >
           <option value="">All Status</option>
           <option value="Pending">Pending</option>
@@ -111,9 +118,9 @@ export default function AdminRequestsPage() {
           <option value="Rejected">Rejected</option>
         </select>
         <select
-          value={paymentStatusFilter}
-          onChange={(e) => setPaymentStatusFilter(e.target.value)}
           className="border px-3 py-2 rounded"
+          value={paymentFilter}
+          onChange={(e) => setPaymentFilter(e.target.value)}
         >
           <option value="">All Payment Status</option>
           <option value="Paid">Paid</option>
@@ -122,139 +129,132 @@ export default function AdminRequestsPage() {
         </select>
       </div>
 
-      {/* ============ MOBILE CARDS ============ */}
+      {/* MOBILE CARDS */}
       <div className="space-y-4 sm:hidden">
-        {filtered.map((request) => (
+        {filtered.map((r) => (
           <div
-            key={request._id}
-            className="bg-white shadow rounded-lg p-4 flex flex-col space-y-2"
+            key={r._id}
+            className="bg-white shadow rounded-lg p-4 flex flex-col space-y-3"
           >
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-semibold text-gray-900">
-                  House: {request.rentalHouseId?.title || "N/A"}
+                  {r.rentalHouseId.title}
                 </p>
                 <p className="text-sm text-gray-600">
-                  Tenant: {request.tenantId.email || "N/A"}
+                  Tenant: {r.tenantId.email}
                 </p>
               </div>
-              <Link href={`/admin/requests/${request._id}`}>
+              <Link href={`/admin/requests/${r._id}`}>
                 <Button size="sm">View</Button>
               </Link>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
-              <div>
-                <strong>Move In:</strong>{" "}
-                {new Date(request.moveInDate).toLocaleDateString()}
-              </div>
-              <div>
-                <strong>Duration:</strong> {request.rentalDuration}
-              </div>
-              <div className="col-span-2">
-                <strong>Message:</strong> {request.message}
-              </div>
-              <div>
-                <strong>Phone:</strong> {request.phone}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Badge
-                  variant={
-                    request.status === "Approved"
-                      ? "outline"
-                      : request.status === "Pending"
-                      ? "default"
-                      : "destructive"
-                  }
-                >
-                  {request.status}
-                </Badge>
-                <Badge
-                  variant={
-                    request.paymentStatus === "Paid"
-                      ? "outline"
-                      : request.paymentStatus === "Pending"
-                      ? "default"
-                      : "destructive"
-                  }
-                >
-                  {request.paymentStatus}
-                </Badge>
-              </div>
+            <p className="text-sm">
+              <strong>Move In:</strong>{" "}
+              {new Date(r.moveInDate).toLocaleDateString()}
+            </p>
+            <p className="text-sm">
+              <strong>Duration:</strong> {r.rentalDuration}
+            </p>
+            <p className="text-sm">
+              <strong>Message:</strong> {r.message}
+            </p>
+            <p className="text-sm">
+              <strong>Phone:</strong> {r.phone}
+            </p>
+            <div className="flex gap-2">
+              <Badge
+                variant={
+                  r.status === "Approved"
+                    ? "outline"
+                    : r.status === "Pending"
+                    ? "default"
+                    : "destructive"
+                }
+              >
+                {r.status}
+              </Badge>
+              <Badge
+                variant={
+                  r.paymentStatus === "Paid"
+                    ? "outline"
+                    : r.paymentStatus === "Pending"
+                    ? "default"
+                    : "destructive"
+                }
+              >
+                {r.paymentStatus}
+              </Badge>
             </div>
           </div>
         ))}
       </div>
 
-      {/* ============ DESKTOP TABLE ============ */}
+      {/* DESKTOP TABLE */}
       <div className="hidden sm:block bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                House Title
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tenant Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Move In Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Rental Duration
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Phone
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Payment Status
-              </th>
+              {[
+                "House Title",
+                "Tenant Email",
+                "Move In",
+                "Duration",
+                "Phone",
+                "Status",
+                "Payment Status",
+              ].map((hdr) => (
+                <th
+                  key={hdr}
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {hdr}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filtered.map((request) => (
-              <tr key={request._id} className="hover:bg-gray-50">
+            {filtered.map((r) => (
+              <tr key={r._id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {request.rentalHouseId?.title || "N/A"}
+                  {r.rentalHouseId.title}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {request.tenantId.email || "N/A"}
+                  {r.tenantId.email}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {new Date(request.moveInDate).toLocaleDateString()}
+                  {new Date(r.moveInDate).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {request.rentalDuration}
+                  {r.rentalDuration}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {request.phone || "N/A"}
+                  {r.phone}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Badge
                     variant={
-                      request.status === "Approved"
+                      r.status === "Approved"
                         ? "outline"
-                        : request.status === "Pending"
+                        : r.status === "Pending"
                         ? "default"
                         : "destructive"
                     }
                   >
-                    {request.status}
+                    {r.status}
                   </Badge>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Badge
                     variant={
-                      request.paymentStatus === "Paid"
+                      r.paymentStatus === "Paid"
                         ? "outline"
-                        : request.paymentStatus === "Pending"
+                        : r.paymentStatus === "Pending"
                         ? "default"
                         : "destructive"
                     }
                   >
-                    {request.paymentStatus}
+                    {r.paymentStatus}
                   </Badge>
                 </td>
               </tr>
@@ -263,9 +263,12 @@ export default function AdminRequestsPage() {
         </table>
       </div>
 
-      <div className="mt-4 text-sm text-gray-500">
-        Showing {filtered.length}{" "}
-        {filtered.length === 1 ? "request" : "requests"}
+      {/* FOOTER & PAGINATION */}
+      <div className="mt-4 flex justify-between items-center text-sm text-gray-500">
+        <span>
+          Showing {filtered.length} of {totalCount} requests
+        </span>
+        <TablePagination totalPage={totalPage} />
       </div>
     </div>
   );

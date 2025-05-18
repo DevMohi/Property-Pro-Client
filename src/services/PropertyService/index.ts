@@ -3,10 +3,10 @@
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
-export const getAllListings = async () => {
+export const getAllListings = async (page?:string,limit?:string) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/landlords/listings`,
+      `${process.env.NEXT_PUBLIC_BASE_API}/landlords/listings?page=${page}&limit=${limit}`,
       {
         method: "GET",
         next: {

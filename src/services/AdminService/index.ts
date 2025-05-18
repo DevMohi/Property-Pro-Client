@@ -3,17 +3,20 @@
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
-export const getAllUsers = async () => {
+export const getAllUsers = async (page?: string, limit?: string) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/admin/users`, {
-      method: "GET",
-      headers: {
-        Authorization: (await cookies()).get("accessToken")!.value,
-      },
-      next: {
-        tags: ["USERS"],
-      },
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/admin/users?limit=${limit}&page=${page}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+        },
+        next: {
+          tags: ["USERS"],
+        },
+      }
+    );
 
     return res.json();
   } catch (error: any) {
@@ -22,10 +25,10 @@ export const getAllUsers = async () => {
   }
 };
 
-export const getAllOrders = async () => {
+export const getAllOrders = async (page?: string, limit?: string) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/order/all-orders`,
+      `${process.env.NEXT_PUBLIC_BASE_API}/order/all-orders?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {

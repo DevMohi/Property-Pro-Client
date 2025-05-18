@@ -50,10 +50,10 @@ export const getMyRentalRequests = async () => {
 };
 
 // 2. Admin: Get all rental requests
-export const getAllRentalRequests = async () => {
+export const getAllRentalRequests = async (page?: string, limit?: string) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/rental-requests`,
+      `${process.env.NEXT_PUBLIC_BASE_API}/rental-requests?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {

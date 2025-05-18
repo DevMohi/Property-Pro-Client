@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import {
   AlertDialog,
@@ -17,48 +17,68 @@ import { Button } from "@/components/ui/button";
 import { deleteUsers, getAllUsers } from "@/services/AdminService";
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
+import TablePagination from "@/components/ui/core/NMTable/TablePaginationDynamic";
 
 export default function Page() {
-  const [data, setData] = useState<any[]>([]);
   const { setIsLoading } = useUser();
+  const params = useSearchParams();
 
+  // read page & limit from URL, fallback to "1"/"5"
+  const pageParam = params.get("page") ?? "1";
+  const limitParam = params.get("limit") ?? "5";
+
+  const [users, setUsers] = useState<any[]>([]);
+  const [totalPage, setTotalPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  // whenever page or limit changes, refetch
   useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
-        const result = await getAllUsers();
-        setData(result.data ?? result);
+        const result = await getAllUsers(pageParam, limitParam);
+        setUsers(result.data);
+        setTotalPage(result.meta.totalPage);
+        setTotalCount(result.meta.total);
       } catch (err) {
-        console.error("load failed", err);
+        console.error("Failed to load users", err);
       } finally {
+        setLoading(false);
         setIsLoading(false);
       }
     })();
-  }, [setIsLoading]);
-
+  }, [pageParam, limitParam, setIsLoading]);
 
   const handleDeleteUser = async (id: string) => {
     try {
       const res = await deleteUsers(id);
       if (res.success) {
-        toast.success(res?.message || "User Deleted Successfully");
-        // remove from local state so UI updates immediately:
-        setData((prev) => prev.filter((u) => u._id !== id));
+        toast.success(res.message || "User Deleted Successfully");
+        setUsers((prev) => prev.filter((u) => u._id !== id));
       } else {
-        toast.error(res?.message || "Could not delete user");
+        toast.error(res.message || "Could not delete user");
       }
     } catch (error) {
       console.error(error);
     }
   };
 
+  if (loading) {
+    return <p className="p-6 text-center">Loading Users…</p>;
+  }
+
+  if (!users.length) {
+    return <p className="p-6 text-center">No Users available</p>;
+  }
+
   return (
-    <div className="container mx-auto px-4 ">
+    <div className="container mx-auto px-4">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">User Management</h1>
 
-      {/* ============ MOBILE CARDS ============ */}
+      {/* MOBILE CARDS */}
       <div className="space-y-4 sm:hidden">
-        {data.map((u) => (
+        {users.map((u) => (
           <div
             key={u._id}
             className="bg-white shadow rounded-lg p-4 flex flex-col space-y-2"
@@ -96,7 +116,7 @@ export default function Page() {
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    disabled = {u.role === 'admin'}
+                    disabled={u.role === "admin"}
                     size="sm"
                     className="text-red-600 hover:text-red-900 hover:bg-red-50"
                   >
@@ -126,41 +146,34 @@ export default function Page() {
         ))}
       </div>
 
-      {/* ============ DESKTOP TABLE ============ */}
+      {/* DESKTOP TABLE */}
       <div className="hidden sm:block bg-white rounded-lg shadow overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Phone
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
+              {["Name", "Email", "Role", "Phone", "Actions"].map((h) => (
+                <th
+                  key={h}
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {data.map((user) => (
+            {users.map((user) => (
               <tr key={user._id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
                       <span className="text-gray-600">
                         {user.name?.charAt(0).toUpperCase() || "U"}
                       </span>
                     </div>
                     <div className="ml-4">
                       <div className="font-medium text-gray-900">
-                        {user.name || "Unknown"}
+                        {user.name}
                       </div>
                     </div>
                   </div>
@@ -190,7 +203,7 @@ export default function Page() {
                       <Button
                         variant="outline"
                         size="sm"
-                        disabled = {user.role === 'admin'}
+                        disabled={user.role === "admin"}
                         className="text-red-600 hover:text-red-900 hover:bg-red-50"
                       >
                         Delete
@@ -223,8 +236,10 @@ export default function Page() {
         </table>
       </div>
 
-      <div className="mt-4 text-sm text-gray-500">
-        Showing {data.length} {data.length === 1 ? "user" : "users"}
+      {/* Pagination Footer */}
+      <div className="mt-4 text-sm text-gray-500 flex justify-between items-center">
+        Showing {users.length} of {totalCount} users
+        <TablePagination totalPage={totalPage} />
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/context/UserContext";
 import Link from "next/link";
 import { getAllOrders } from "@/services/AdminService";
+import TablePagination from "@/components/ui/core/NMTable/TablePaginationDynamic";
+import { useSearchParams } from "next/navigation";
 
 type Order = {
   _id: string;
@@ -30,8 +32,13 @@ type Order = {
 
 export default function AdminOrdersPage() {
   const { setIsLoading } = useUser();
+  const params = useSearchParams();
+  const pageParam = params.get("page") ?? "1";
+  const limitParam = params.get("limit") ?? "3";
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalPage, setTotalPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   // Filter states
   const [titleFilter, setTitleFilter] = useState("");
@@ -42,8 +49,10 @@ export default function AdminOrdersPage() {
     (async () => {
       try {
         setIsLoading(true);
-        const res = await getAllOrders();
+        const res = await getAllOrders(pageParam, limitParam);
         setOrders(res.data);
+        setTotalPage(res.meta.totalPage);
+        setTotalCount(res.meta.total);
       } catch (err) {
         console.error("Failed to load orders", err);
       } finally {
@@ -51,10 +60,14 @@ export default function AdminOrdersPage() {
         setIsLoading(false);
       }
     })();
-  }, [setIsLoading]);
+  }, [setIsLoading, pageParam, limitParam]);
 
   if (loading) {
     return <p className="p-6 text-center">Loading orders…</p>;
+  }
+
+  if (!orders.length) {
+    return <p className="p-6 text-center">No orders available</p>;
   }
 
   // Apply filters
@@ -228,9 +241,9 @@ export default function AdminOrdersPage() {
         </table>
       </div>
 
-      <div className="mt-4 text-sm text-gray-500">
-        Showing {filteredOrders.length}{" "}
-        {filteredOrders.length === 1 ? "order" : "orders"}
+      <div className="mt-4 text-sm text-gray-500 flex justify-between items-center">
+        Showing {orders.length} of {totalCount} listings
+        <TablePagination totalPage={totalPage} />
       </div>
     </div>
   );

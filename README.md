@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PropertyPro 🏠
 
-## Getting Started
+**PropertyPro** is a full-stack rental management platform designed to simplify property management for landlords, tenants, and administrators. It enables property listings, tenant-landlord communication, rent payments, complaint management, and administrative oversight — all within a modern, responsive web application.
 
-First, run the development server:
+## Live Link - https://property-pro-client.vercel.app/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🚀 Features
+
+### 🏡 Property Listings
+
+- Search and filter properties by location, price, and availability
+- View detailed property descriptions and photos
+
+### 👥 Role-Based Access
+
+- **Tenants**: View and rent properties, pay rent, submit complaints
+- **Landlords**: List and manage properties, respond to tenant issues
+- **Admins**: Oversee the entire platform, manage users, view analytics
+
+### 🔐 Authentication & Authorization
+
+- JWT-based authentication with secure cookie sessions
+- Role-specific dashboard access and routing
+
+### 💳 Secure Payments
+
+- Integrated **SurjoPay** payment gateway
+- Rent tracking and receipts
+
+### 📊 Analytics & Dashboard
+
+- Admin dashboard with statistics
+- Key metrics: users, properties, payments, and complaints
+
+## ⚙️ Tech Stack
+
+- **Frontend**: Next.js, Tailwind CSS, TypeScript
+- **Backend**: Node.js, Express.js
+- **Database**: Mongoose
+- **Authentication**: JWT (JSON Web Token)
+- **Payments**: SurjoPay
+- **UI Components**: ShadCN UI, Lucide Icons
+
+---
+
+## 📹 Project Walkthrough
+
+Check out the full video explanation of the project here:  
+**[▶️ Watch the Video](https://drive.google.com/file/d/1Z9ZoVVadFBooxwlI92hiIRqmc_BSaY_k/view?usp=sharing)**
+
+---
+
+## 🧰 Manual Installation
+
+Follow these steps to set up PropertyPro on your local machine:
+
+### 1. Clone the Repository
+
+```
+git clone https://github.com/mahammadshariaralamsarker/BasaVaraFrontEnd.git
+cd BasaVaraFrontEnd
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Frontend
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+npm install
+```
 
-## Learn More
+### 3. Configure Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+Create `.env` files
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Example `.env` for Client:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+NEXT_PUBLIC_API_URL=http://localhost:5000
+JWT_SECRET= add-a-jwt-secrate-here
+```
 
-## Deploy on Vercel
+### 4. Run the Application
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Start Backend
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Don't forget to run the server first then start the client side.
+
+#### Start Frontend
+
+Open a new terminal:
+
+```
+npm run dev
+```
+
+The frontend will run on `http://localhost:3000` and the backend on `http://localhost:5000`.
+
+---
+
+# Things to add -> Mail , Details Page , Checkout Page , Redux persist and favouirates, upload and status 

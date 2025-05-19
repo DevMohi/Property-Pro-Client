@@ -83,7 +83,6 @@ export default function Navbar() {
             );
           })}
 
-          {/* Explore Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger>
               <span

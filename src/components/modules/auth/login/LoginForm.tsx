@@ -150,7 +150,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#00A99D] text-white py-2 rounded hover:bg-[#008F85]"
+              className="w-full bg-[#00A99D] text-white py-2 rounded hover:bg-[#008F85] cursor-pointer"
             >
               {isSubmitting ? "Logging in…" : "Login"}
             </button>

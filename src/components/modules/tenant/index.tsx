@@ -163,7 +163,7 @@ export default function AllProducts({ listings }: { listings: Listing[] }) {
           />
         </div>
 
-        <div className="flex flex-wrap gap-4 justify-start">
+        <div className="flex flex-wrap gap-4 justify-center">
           {/* Show per page */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <Label>Show:</Label>
@@ -213,7 +213,7 @@ export default function AllProducts({ listings }: { listings: Listing[] }) {
             </Select>
 
             {/* Toogle  */}
-            <Button variant="outline" onClick={() => setShowFilters((f) => !f)}>
+            <Button className="block md:block" variant="outline" onClick={() => setShowFilters((f) => !f)}>
               {showFilters ? <X size={16} /> : <Filter size={16} />}
             </Button>
           </div>
@@ -336,11 +336,13 @@ export default function AllProducts({ listings }: { listings: Listing[] }) {
             ))}
           </div>
 
-          <TablePaginationStatic
-            totalPage={totalPages}
-            currentPage={activePage}
-            onPageChange={setActivePage}
-          />
+          <div className="flex justify-end">
+            <TablePaginationStatic
+              totalPage={totalPages}
+              currentPage={activePage}
+              onPageChange={setActivePage}
+            />
+          </div>
         </main>
       </div>
     </div>

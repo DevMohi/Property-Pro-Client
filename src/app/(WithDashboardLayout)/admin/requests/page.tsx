@@ -88,7 +88,7 @@ export default function AdminRequestsPage() {
   });
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="px-4 py-6">
       <h1 className="text-3xl font-bold mb-6">Rental Requests</h1>
 
       {/* FILTER BAR */}

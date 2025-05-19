@@ -2,24 +2,32 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { logout } from "@/services/AuthService";
+import { useUser } from "@/context/UserContext";
+import { protectedRoutes } from "@/constants";
+
 import { Button } from "@/components/ui/button";
-import { Heart, LogOut, Menu, X, Home, ChevronDown } from "lucide-react";
+import {
+  Menu,
+  X,
+  Home as HomeIcon,
+  ChevronDown,
+  Heart,
+  LogOut,
+} from "lucide-react";
 import {
   DropdownMenu,
+  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { logout } from "@/services/AuthService";
-import { useUser } from "@/context/UserContext";
-import { usePathname, useRouter } from "next/navigation";
-import { protectedRoutes } from "@/constants";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Navbar() {
-  const { user, setIsLoading, setUser } = useUser();
+  const { user, setUser, setIsLoading } = useUser();
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -33,100 +41,82 @@ export default function Navbar() {
     }
   };
 
+  const navItems = [
+    { href: "/", label: "Home" },
+    { href: "/listings", label: "Listings" },
+    { href: "/about", label: "About Us" },
+    { href: "/tips", label: "Tips" },
+    { href: "/contact", label: "Contact Us" },
+    { href: "/privacy-policy", label: "Privacy & Policy" },
+    { href: "/faq", label: "FAQ" },
+  ];
+
   return (
-    <header className="border-b bg-background w-full sticky top-0 z-50 px-4 lg:px-0">
-      <div className="container mx-auto flex justify-between items-center h-16">
+    <header className="sticky top-0 z-50 w-full bg-background border-b px-4 lg:px-0">
+      <div className="container mx-auto flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center text-2xl font-black">
-          <div className="flex items-center gap-2 py-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-600 text-white">
-              <Home className="h-4 w-4" />
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-teal-600 text-white">
+              <HomeIcon className="h-4 w-4" />
             </div>
-            <div className="font-semibold text-xl ">PropertyPro</div>
+            <span className="font-semibold text-xl">PropertyPro</span>
           </div>
         </Link>
 
-        {/* Desktop Middle Nav */}
-        <nav className="hidden lg:flex gap-6 items-center">
-          <Link
-            href="/"
-            className={`font-semibold ${
-              pathname === "/"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            Home
-          </Link>
-          <Link
-            href="/listings"
-            className={`font-semibold ${
-              pathname === "/listings"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            Listings
-          </Link>
-          <Link
-            href="/about"
-            className={`font-semibold ${
-              pathname === "/about"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            About Us
-          </Link>
-          <Link
-            href="/tips"
-            className={`font-semibold ${
-              pathname === "/tips"
-                ? "text-teal-600"
-                : "text-gray-800 hover:text-teal-600"
-            }`}
-          >
-            Tips
-          </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <span
+        {/* Desktop Main Nav */}
+        <nav className="hidden lg:flex items-center gap-6">
+          {["/", "/listings", "/about", "/tips"].map((href) => {
+            const label = navItems.find((n) => n.href === href)!.label;
+            return (
+              <Link
+                key={href}
+                href={href}
                 className={`font-semibold ${
-                  pathname.startsWith("/explore")
+                  pathname === href
                     ? "text-teal-600"
                     : "text-gray-800 hover:text-teal-600"
                 }`}
               >
-                Explore{" "}
-                <ChevronDown className="inline-block ml-2 h-4 w-4 text-gray-800" />
+                {label}
+              </Link>
+            );
+          })}
+
+          {/* Explore Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <span
+                className={`flex items-center font-semibold ${
+                  pathname.startsWith("/faq") ||
+                  pathname.startsWith("/privacy-policy")
+                    ? "text-teal-600"
+                    : "text-gray-800 hover:text-teal-600"
+                }`}
+              >
+                Explore
+                <ChevronDown className="ml-1 h-4 w-4" />
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <Link href="/faq">
-                <DropdownMenuItem className="cursor-pointer">
-                  FAQ
-                </DropdownMenuItem>
+                <DropdownMenuItem>FAQ</DropdownMenuItem>
               </Link>
               <Link href="/privacy-policy">
-                <DropdownMenuItem>Privacy & Policy</DropdownMenuItem>
+                <DropdownMenuItem>Privacy &amp; Policy</DropdownMenuItem>
               </Link>
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
 
         {/* Desktop Right Nav */}
-        <nav className="hidden lg:flex gap-2 items-center">
+        <nav className="hidden lg:flex items-center gap-4">
           {user?.role === "tenant" && (
-            <>
-              {/* <Button variant="outline" className="rounded-full p-0">
-                <ShoppingBag />
-              </Button> */}
-              <Link href="/tenant/requests">
-                <Button variant="outline" className="rounded-full p-0 ">
-                  <Heart />
-                </Button>
-              </Link>
-            </>
+            <Link href="/tenant/requests">
+              <Button variant="outline" className="p-0 rounded-full">
+                <Heart />
+              </Button>
+            </Link>
           )}
 
           {user?.email ? (
@@ -140,17 +130,18 @@ export default function Navbar() {
               <DropdownMenuContent>
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link href={`/${user.role}/dashboard`}>Dashboard</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href={`/${user.role}/profile`}>Profile</Link>
-                </DropdownMenuItem>
+                <Link href={`/${user.role}/dashboard`}>
+                  <DropdownMenuItem className="cursor-pointer">
+                    Dashboard
+                  </DropdownMenuItem>
+                </Link>
+                <Link href={`/${user.role}/profile`}>
+                  <DropdownMenuItem className="cursor-pointer">
+                    Profile
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleLogout}
-                  className="cursor-pointer"
-                >
+                <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2" /> Log Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -158,18 +149,12 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/register">
-                <Button
-                  variant="outline"
-                  className="rounded-full cursor-pointer"
-                >
+                <Button variant="outline" className="cursor-pointer">
                   Register
                 </Button>
               </Link>
               <Link href="/login">
-                <Button
-                  variant="outline"
-                  className="rounded-full cursor-pointer"
-                >
+                <Button variant="outline" className="cursor-pointer">
                   Login
                 </Button>
               </Link>
@@ -177,80 +162,95 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Toggle */}
         <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden"
+          className="lg:hidden text-gray-800"
+          onClick={() => setIsMobileMenuOpen(true)}
         >
-          {isMobileMenuOpen ? <X /> : <Menu />}
+          <Menu />
         </button>
       </div>
 
-      {/* Mobile Menu */}
-      <div
-        className={`lg:hidden ${
-          isMobileMenuOpen ? "block" : "hidden"
-        } bg-white p-5 shadow-lg`}
-      >
-        <div className="flex flex-col items-center gap-4">
-          {[
-            { href: "/", label: "Home" },
-            { href: "/listings", label: "Listings" },
-            { href: "/about", label: "About Us" },
-            { href: "/tips", label: "Tips" },
-            { href: "/contact", label: "Contact Us" },
-            { href: "/privacy-policy", label: "Privacy & Policy" },
-            { href: "/faq", label: "FAQ" },
-          ].map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`w-full text-center px-2 py-1 rounded ${
-                pathname === href
-                  ? "text-teal-600 underline"
-                  : "text-gray-800 hover:text-teal-600 hover:underline"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
+      {/* Mobile Slide-in Menu */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          {/* Backdrop with reduced opacity */}
+          <div
+            className="fixed inset-0 bg-opacity-70"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
 
-          {user?.email ? (
-            <div className="w-full">
-              <Link
-                href={`/${user.role}/dashboard`}
-                className={`block text-center w-full px-2 py-1 rounded ${
-                  pathname === `/${user.role}/dashboard`
-                    ? "text-teal-600 underline"
-                    : "text-gray-800 hover:text-teal-600 hover:underline"
-                }`}
-              >
-                Dashboard
-              </Link>
-              <Button
-                variant="outline"
-                className="w-full mt-2"
-                onClick={handleLogout}
-              >
-                Log Out
-              </Button>
-            </div>
-          ) : (
-            <div className="w-full space-y-2">
-              <Link href="/register" className="block">
-                <Button variant="outline" className="w-full">
-                  Register
-                </Button>
-              </Link>
-              <Link href="/login" className="block">
-                <Button variant="outline" className="w-full">
-                  Login
-                </Button>
-              </Link>
-            </div>
-          )}
+          {/* Slide-in panel */}
+          <div className="relative w-64 bg-white p-6 shadow-xl overflow-y-auto">
+            <button
+              className="absolute top-4 right-4 text-gray-800"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </button>
+
+            <nav className="mt-8 flex flex-col space-y-4">
+              {navItems.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block px-2 py-1 text-lg font-medium rounded transition ${
+                    pathname === href
+                      ? "text-teal-600 underline"
+                      : "text-gray-800 hover:text-teal-600"
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
+
+              {user?.email ? (
+                <>
+                  <Link
+                    href={`/${user.role}/dashboard`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`block px-2 py-1 text-lg font-medium rounded transition ${
+                      pathname === `/${user.role}/dashboard`
+                        ? "text-teal-600 underline"
+                        : "text-gray-800 hover:text-teal-600"
+                    }`}
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-2 py-1 text-lg font-medium rounded text-gray-800 hover:text-teal-600 transition"
+                  >
+                    Log Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/register">
+                    <Button
+                      variant="outline"
+                      className="w-full mb-2 text-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Register
+                    </Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button
+                      variant="outline"
+                      className="w-full text-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
     </header>
   );
 }

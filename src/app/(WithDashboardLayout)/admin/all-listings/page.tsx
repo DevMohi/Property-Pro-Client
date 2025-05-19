@@ -79,7 +79,7 @@ export default function Page() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
         Property Listings
       </h1>
@@ -122,7 +122,7 @@ export default function Page() {
               </div>
             </div>
             {/* actions */}
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 ">
               <Button
                 variant="outline"
                 size="sm"

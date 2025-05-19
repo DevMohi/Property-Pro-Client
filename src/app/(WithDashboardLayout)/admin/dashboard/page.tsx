@@ -45,7 +45,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="py-6 px-4">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
 
       {/* Dashboard Cards */}
@@ -76,7 +76,7 @@ export default function AdminDashboard() {
         />
       </div>
 
-      <div className="container mx-auto py-10">
+      <div className="px-4 py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Rental Trends Chart */}
           <div className="bg-white rounded-lg p-4 shadow">

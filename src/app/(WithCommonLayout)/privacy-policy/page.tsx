@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 
 const sections = [
@@ -64,24 +65,24 @@ const sections = [
 
 export default function PrivacyPolicyPage() {
   return (
-    <section className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="container mx-auto bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-teal-600 mb-8 sm:mb-12">
+    <section className="bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-teal-600 mb-6 sm:mb-8">
           Privacy Policy
         </h1>
-        <div className="space-y-10 sm:space-y-12">
+        <div className="space-y-8">
           {sections.map((section, idx) => (
             <div key={idx}>
               <div className="flex items-center mb-3 sm:mb-4">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-teal-100 text-teal-600 font-semibold rounded-full mr-3 sm:mr-4">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0 flex items-center justify-center bg-teal-100 text-teal-600 font-semibold rounded-full mr-2 sm:mr-3">
                   {idx + 1}
                 </div>
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-teal-600">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-teal-600">
                   {section.title}
                 </h2>
               </div>
               {section.content && (
-                <p className="text-base sm:text-lg text-gray-700 mb-3 leading-relaxed">
+                <p className="text-sm sm:text-base text-gray-700 mb-3 leading-relaxed">
                   {section.content}{" "}
                   {section.contact && (
                     <a
@@ -94,7 +95,7 @@ export default function PrivacyPolicyPage() {
                 </p>
               )}
               {section.list && (
-                <ul className="list-disc list-inside text-base sm:text-lg text-gray-700 space-y-1 sm:space-y-2">
+                <ul className="list-disc list-inside text-sm sm:text-base text-gray-700 space-y-1">
                   {section.list.map((item, i) => (
                     <li key={i}>{item}</li>
                   ))}

@@ -63,7 +63,7 @@ export default function HomeSlider() {
             </p>
             <Link
               href="/listings"
-              className="inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm sm:text-base md:text-lg px-5 py-2 sm:py-3 rounded-full transition"
+              className="inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm sm:text-base md:text-lg px-5 py-2 sm:py-3  transition"
             >
               See Listings
             </Link>
@@ -81,7 +81,7 @@ export default function HomeSlider() {
       </button>
       <button
         onClick={() => setCurrent((c) => (c + 1) % slides.length)}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 1bg-black bg-opacity-30 text-white p-2 rounded-full hover:bg-opacity-60 transition z-20"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 text-white p-2 rounded-full hover:bg-opacity-60 transition z-20"
       >
         <ChevronRight className="w-5 h-5 cursor-pointer" />
       </button>

@@ -73,7 +73,7 @@ export default function Page() {
   }
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="px-4">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">User Management</h1>
 
       {/* MOBILE CARDS */}

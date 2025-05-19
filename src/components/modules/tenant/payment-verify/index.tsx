@@ -45,7 +45,7 @@ const PaymentVerificationPage = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="px-4 py-6">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Your Payments</h1>
 
       <div>

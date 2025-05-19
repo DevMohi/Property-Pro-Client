@@ -248,7 +248,7 @@ function RegisterForm() {
 
             <Button
               type="submit"
-              className="w-full py-2  bg-[#00A99D] text-white  rounded hover:bg-[#008F85]"
+              className="w-full py-2  bg-[#00A99D] text-white  rounded hover:bg-[#008F85] cursor-pointer"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Registering…" : "Register"}

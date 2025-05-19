@@ -1,60 +1,61 @@
-"use client";
-import React from "react";
-import { Search, Mail, FileSignature, ChevronRight } from "lucide-react";
+'use client';
+import React from 'react';
+import { Search, Mail, FileSignature } from 'lucide-react';
 
 export default function HowItWorksSection() {
   const steps = [
     {
       Icon: Search,
-      title: "Browse Listings",
+      title: 'Search Properties',
       description:
-        "Explore available rental properties in your area with advanced filters and high-quality images.",
+        'Browse through thousands of verified listings using detailed filters to find the perfect home for your lifestyle.',
     },
     {
       Icon: Mail,
-      title: "Request Rentals",
+      title: 'Contact Landlords',
       description:
-        "Send rental requests directly to property owners and schedule viewings in a few clicks.",
+        'Message property owners directly, schedule viewings, and negotiate terms—all within our secure platform.',
     },
     {
       Icon: FileSignature,
-      title: "Sign & Move In",
+      title: 'Secure Your Lease',
       description:
-        "Complete the lease digitally with secure signatures and get ready to move into your new home.",
+        'Complete your rental agreement digitally with e-signatures and get ready to move into your new home seamlessly.',
     },
   ];
 
   return (
     <section className="bg-white py-16">
-      <div className="container mx-auto">
-        {/* Header */}
+      <div className="container mx-auto px-6 lg:px-0">
+        {/* Section Header */}
         <div className="max-w-2xl mx-auto text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900">
             How PropertyPro Works
           </h2>
           <div className="mt-2 w-24 h-1 bg-teal-600 mx-auto"></div>
           <p className="mt-4 text-base sm:text-lg text-gray-600">
-            Renting a property is effortless. Follow these simple steps and get
-            started today!
+            Our three-step process makes renting effortless—designed to get you from
+            browsing to moving in with ease.
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-20">
+        {/* Steps Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {steps.map(({ Icon, title, description }, idx) => (
-            <React.Fragment key={idx}>
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition flex-1 max-w-sm text-center p-6 flex flex-col h-full">
-                <div className="mx-auto w-12 h-12 flex items-center justify-center bg-teal-100 rounded-full mb-4">
-                  <Icon className="w-6 h-6 text-teal-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">{description}</p>
+            <div
+              key={idx}
+              className="bg-gray-50 rounded-2xl p-6 flex flex-col items-center text-center shadow hover:shadow-lg transition"
+            >
+              <div className="p-4 bg-teal-100 rounded-full mb-4">
+                <Icon className="w-6 h-6 text-teal-600" />
               </div>
-              {idx < steps.length - 1 && (
-                <ChevronRight className=" lg:block w-8 h-8 text-teal-600" />
-              )}
-            </React.Fragment>
+              <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+                {title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                {description}
+              </p>
+            </div>
           ))}
         </div>
       </div>

@@ -8,7 +8,7 @@ const ListingSection = async () => {
 
   return (
     <section className="bg-gray-50 py-8 md:py-12 ">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-0">
+      <div className="container mx-auto px-6 lg:px-0">
         {/* Heading and Subheading */}
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2">
@@ -21,7 +21,7 @@ const ListingSection = async () => {
         </div>
 
         {/* Grid Layout for Listings */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {listings.slice(0, 4).map((listing: any) => (
             <div className="flex flex-col h-full" key={listing._id}>
               <ListingCard listing={listing} />

@@ -1,6 +1,6 @@
-'use client';
-import Image from 'next/image';
-import { Check } from 'lucide-react';
+"use client";
+import Image from "next/image";
+import { Check } from "lucide-react";
 
 export default function FeaturedSection() {
   return (
@@ -34,13 +34,16 @@ export default function FeaturedSection() {
             {/* Always show list; add horizontal padding on mobile */}
             <ul className="space-y-4 px-4 sm:px-0 hidden lg:block">
               {[
-                'Wide selection of verified rental properties across prime locations',
-                'Easy-to-use search filters to match your lifestyle and budget',
-                'Direct communication with trusted property owners and managers',
-                'Transparent pricing with no hidden charges',
-                '24/7 customer support to assist you at every step',
+                "Wide selection of verified rental properties across prime locations",
+                "Easy-to-use search filters to match your lifestyle and budget",
+                "Direct communication with trusted property owners and managers",
+                "Transparent pricing with no hidden charges",
+                "24/7 customer support to assist you at every step",
               ].map((text) => (
-                <li key={text} className="flex items-start gap-3 text-sm sm:text-base">
+                <li
+                  key={text}
+                  className="flex items-start gap-3 text-sm sm:text-base"
+                >
                   <Check className="w-5 h-5 text-teal-600 flex-shrink-0 mt-1" />
                   <span>{text}</span>
                 </li>

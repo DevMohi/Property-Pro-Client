@@ -40,9 +40,9 @@ const testimonials = [
 
 const TestimonialSection = () => {
   return (
-    <section className="py-16">
-      <div className="container mx-auto text-center">
-        <h2 className="text-3xl font-semibold text-gray-800 mb-8">
+    <section className="py-10 lg:py-24">
+      <div className="container mx-auto px-6 lg:px-0 text-center">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-800 mb-8">
           What Our Users Say
         </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">

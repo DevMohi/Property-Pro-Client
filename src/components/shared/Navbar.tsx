@@ -34,15 +34,15 @@ export default function Navbar() {
   };
 
   return (
-    <header className="border-b bg-background w-full sticky top-0 z-50 px-2 md:px-0">
+    <header className="border-b bg-background w-full sticky top-0 z-50 px-4 lg:px-0">
       <div className="container mx-auto flex justify-between items-center h-16">
         {/* Logo */}
         <Link href="/" className="flex items-center text-2xl font-black">
           <div className="flex items-center gap-2 py-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-600 text-white">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-teal-600 text-white">
               <Home className="h-4 w-4" />
             </div>
-            <div className="font-semibold">PropertyPro</div>
+            <div className="font-semibold text-xl ">PropertyPro</div>
           </div>
         </Link>
 
@@ -102,8 +102,10 @@ export default function Navbar() {
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <Link href="/faq" >
-                <DropdownMenuItem className="cursor-pointer">FAQ</DropdownMenuItem>
+              <Link href="/faq">
+                <DropdownMenuItem className="cursor-pointer">
+                  FAQ
+                </DropdownMenuItem>
               </Link>
               <Link href="/privacy-policy">
                 <DropdownMenuItem>Privacy & Policy</DropdownMenuItem>
@@ -195,9 +197,10 @@ export default function Navbar() {
             { href: "/", label: "Home" },
             { href: "/listings", label: "Listings" },
             { href: "/about", label: "About Us" },
+            { href: "/tips", label: "Tips" },
             { href: "/contact", label: "Contact Us" },
-            { href: "/faq", label: "FAQ" },
             { href: "/privacy-policy", label: "Privacy & Policy" },
+            { href: "/faq", label: "FAQ" },
           ].map(({ href, label }) => (
             <Link
               key={href}

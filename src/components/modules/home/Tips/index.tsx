@@ -27,9 +27,9 @@ export default function TipsForRenters() {
   ];
 
   return (
-    <section className="py-12 sm:py-16">
+    <section className="pt-10 lg:pt-24">
       <div className="container mx-auto px-6 lg:px-0 text-center">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-800">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
           Tips for Renters
         </h2>
         <p className="mt-2 text-sm sm:text-base text-gray-600">

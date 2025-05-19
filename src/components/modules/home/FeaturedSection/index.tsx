@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 
 export default function FeaturedSection() {
   return (
-    <section className="bg-white py-16">
+    <section className="bg-white pt-10 lg:pt-24">
       <div className="container mx-auto px-6 lg:px-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* IMAGE */}
@@ -20,7 +20,7 @@ export default function FeaturedSection() {
 
           {/* TEXT CONTENT */}
           <div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 text-center lg:text-left">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 text-center lg:text-left">
               Find Your Perfect Home with PropertyPro
             </h2>
             <div className="w-20 h-1 bg-teal-600 mb-6 mx-auto "></div>

@@ -1,8 +1,22 @@
+'use client'
 import { Mail } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export default function NewsletterSection() {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname !== "/") return;
+  }, [pathname]);
+
+  // If not on "/", render nothing
+  if (pathname !== "/") {
+    return null;
+  }
+
   return (
-    <section className="py-16 bg-teal-500 container mx-auto text-white">
+    <section className="py-16 bg-teal-500 text-white">
       <div className=" text-center">
         <h2 className="text-xl md:text-3xl font-extrabold mb-4">
           Stay Updated with the Latest Listings

@@ -3,15 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Heart,
-  LogOut,
-  ShoppingBag,
-  Menu,
-  X,
-  Home,
-  ChevronDown,
-} from "lucide-react";
+import { Heart, LogOut, Menu, X, Home, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,6 +78,16 @@ export default function Navbar() {
           >
             About Us
           </Link>
+          <Link
+            href="/tips"
+            className={`font-semibold ${
+              pathname === "/tips"
+                ? "text-teal-600"
+                : "text-gray-800 hover:text-teal-600"
+            }`}
+          >
+            Tips
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger>
               <span
@@ -100,8 +102,8 @@ export default function Navbar() {
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <Link href="/faq">
-                <DropdownMenuItem>FAQ</DropdownMenuItem>
+              <Link href="/faq" >
+                <DropdownMenuItem className="cursor-pointer">FAQ</DropdownMenuItem>
               </Link>
               <Link href="/privacy-policy">
                 <DropdownMenuItem>Privacy & Policy</DropdownMenuItem>
@@ -114,11 +116,11 @@ export default function Navbar() {
         <nav className="hidden lg:flex gap-2 items-center">
           {user?.role === "tenant" && (
             <>
-              <Button variant="outline" className="rounded-full p-0">
+              {/* <Button variant="outline" className="rounded-full p-0">
                 <ShoppingBag />
-              </Button>
+              </Button> */}
               <Link href="/tenant/requests">
-                <Button variant="outline" className="rounded-full p-0 ml-2">
+                <Button variant="outline" className="rounded-full p-0 ">
                   <Heart />
                 </Button>
               </Link>
@@ -154,12 +156,18 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/register">
-                <Button variant="outline" className="rounded-full">
+                <Button
+                  variant="outline"
+                  className="rounded-full cursor-pointer"
+                >
                   Register
                 </Button>
               </Link>
               <Link href="/login">
-                <Button variant="outline" className="rounded-full ml-2">
+                <Button
+                  variant="outline"
+                  className="rounded-full cursor-pointer"
+                >
                   Login
                 </Button>
               </Link>
